@@ -7,7 +7,7 @@
 '
 '   Examples:
 '   Tracker init
-'   GA_Tracker().setTrackingID("UA-12345678-90")
+'   GA_Tracker().init("UA-12345678-90")
 '
 '   Event tracking
 '   GA_Tracker().trackEvent({ category: "application", action: "launch"})
@@ -15,9 +15,9 @@
 '   Screen tracking
 '   GA_Tracker().trackScreen({ name: "mainScreen" })
 '
-'   Transaction tracking
-'   GA_Tracker().trackTransaction({ transID: "OD564", transRevenue: "10.00"})
-'   GA_Tracker().trackItem({ transID: "OD564", itemName: "Test01", itemPrice: "10.00", itemCode: "TEST001", itemCat: "vod"})
+'   E-Commerce tracking
+'   GA_Tracker().trackTransaction({ id: "OD564", revenue: "10.00"})
+'   GA_Tracker().trackItem({ transactionId: "OD564", name: "Test01", price: "10.00", code: "TEST001", category: "vod"})
 '
 
 function GoogleAnalyticsLib() as Object
@@ -38,7 +38,7 @@ function GoogleAnalyticsLib() as Object
         di = createObject("roDeviceInfo")
 
         m.analytics = {
-            _accountID: invalid
+            _trackingID: invalid
             _clientID: di.getClientTrackingId()
             _deviceModel: di.getModel()
             _deviceVersion: getDeviceVersion()
@@ -52,8 +52,8 @@ function GoogleAnalyticsLib() as Object
             _port: createObject("roMessagePort")
             _url: invalid
 
-            setTrackingID: function(trackingId as String)
-                m._accountID = trackingId
+            init: function(trackingId as String)
+                m._trackingID = trackingId
                 m._isTracking = true
             end function
 
@@ -61,13 +61,19 @@ function GoogleAnalyticsLib() as Object
                 return m._port
             end function
 
+            getBaseObject: function
+                return {
+                    v: m._protocol
+                    cid: m._clientID
+                    tid: m._trackingID
+                }
+            end function
+
             trackEvent: function(event as Object) as Dynamic
                 if not m._isTracking then return invalid
 
-                return m._sendData({
-                    v  : m._protocol
-                    cid: m._clientID
-                    tid: m._accountID
+                payload = getBaseObject()
+                payload.append({
                     sr : m._display
                     vp : m._ratio
                     an : m._appName
@@ -80,15 +86,15 @@ function GoogleAnalyticsLib() as Object
                     ev : event.value
                     cd1 : event.dim1
                 })
+
+                return m._send(payload)
             end function
 
             trackScreen: function(screen as Object) as Dynamic
                 if not m._isTracking then return invalid
 
-                return m._sendData({
-                    v  : m._protocol
-                    cid: m._clientID
-                    tid: m._accountID
+                payload = getBaseObject()
+                payload.append({
                     sr : m._display
                     vp : m._ratio
                     an : m._appName
@@ -97,56 +103,48 @@ function GoogleAnalyticsLib() as Object
                     t  : "screenview"
                     cd : screen.name
                 })
+                
+                return m._send(payload)
             end function
 
             trackTransaction: function(transaction as Object) as Dynamic
                 if not m._isTracking then return invalid
 
-                return m._sendData({
-                    v  : m._protocol
-                    cid: m._clientID
-                    tid: m._accountID
+                payload = getBaseObject()
+                payload.append({
                     ds : "app"
                     t  : "transaction"
-                    ta : "Roku"
-                    ti : transaction.transID
-                    tr : transaction.transRevenue
-                    tt : transaction.transTax
-                    cu : transaction.curCode
+                    ta : "roku"
+                    ti : transaction.id
+                    tr : transaction.revenue
+                    tt : transaction.tax
+                    cu : transaction.currencyCode
                     cd1 : transaction.dim1
                 })
+
+                return m._send(payload)
             end function
 
             trackItem: function(item as Object) as Dynamic
                 if not m._isTracking then return invalid
 
-                return m._sendData({
-                    v  : m._protocol
-                    cid: m._clientID
-                    tid: m._accountID
+                payload = getBaseObject()
+                payload.append({
                     ds : "app"
                     t  : "item"
-                    iq : "1"
-                    ti : item.transID
-                    in : item.itemName
-                    ip : item.itemPrice
-                    cu : item.curCode
-                    ic : item.itemCode
-                    iv : item.itemCat
+                    iq : item.quantity
+                    ti : item.transactionId
+                    in : item.name
+                    ip : item.price
+                    cu : item.currencyCode
+                    ic : item.code
+                    iv : item.category
                 })
+
+                return m._send(payload)
             end function
 
-            handleResponse: function(msg)
-                if type(msg) = "roUrlEvent" then
-                    if msg.getResponseCode() >= 200 and msg.getResponseCode() < 300 then
-                        print "[GA-lib] Tracking successful: "; m._url
-                    else
-                        print "[GA-lib] Tracking failed: "; m._url
-                    end if
-                end if
-            end function
-
-            _sendData: function(payload as Object) as Object
+            _send: function(payload as Object) as Object
                 m._url = m._createPayloadUrl(payload)
 
                 req = createObject("roURLTransfer")
@@ -172,6 +170,16 @@ function GoogleAnalyticsLib() as Object
 
             _httpEncode: function(str as String) as String
                 return createObject("roUrlTransfer").escape(str)
+            end function
+
+            handleResponse: function(msg)
+                if type(msg) = "roUrlEvent" then
+                    if msg.getResponseCode() >= 200 and msg.getResponseCode() < 300 then
+                        print "[GA-lib] Tracking successful: "; m._url
+                    else
+                        print "[GA-lib] Tracking failed: "; m._url
+                    end if
+                end if
             end function
 
         }
