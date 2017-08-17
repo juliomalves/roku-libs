@@ -55,35 +55,35 @@ function ConsoleLib(var = invalid) as Object
             return eventTime
         end function
 
-        '** Gets current time
+        '** Get timestamp with current time
         '@return string with the following format: "HH:MM:SS:MMM"
-        _getCurrentTime: function() as String
-            now = CreateObject("roDateTime")
-            now.ToLocalTime()
+        _getTimestamp: function() as String
+            now = createObject("roDateTime")
+            now.toLocalTime()
 
-            hours% = now.GetHours()
-            mins% = now.GetMinutes()
-            seconds% = now.GetSeconds()
-            millis% = now.GetMilliseconds()
+            hours = now.getHours()
+            mins = now.getMinutes()
+            seconds = now.getSeconds()
+            millis = now.getMilliseconds()
 
-            sHours$ = hours%.ToStr()
-            if sHours$.Len() = 1  then sHours$ = "0" + sHours$
+            sHours = hours.toStr()
+            if sHours.len() = 1  then sHours = "0" + sHours
 
-            sMins$ = mins%.ToStr()
-            if sMins$.Len() = 1  then sMins$ = "0" + sMins$
+            sMins = mins.toStr()
+            if sMins.len() = 1  then sMins = "0" + sMins
 
-            sSecs$ = seconds%.ToStr()
-            if sSecs$.Len() = 1  then sSecs$ = "0" + sSecs$
+            sSecs = seconds.toStr()
+            if sSecs.Len() = 1  then sSecs = "0" + sSecs
 
-            sMillis$ = millis%.ToStr()
-            if sMillis$.Len() = 2  then sMillis$ = "0" + sMillis$
-            if sMillis$.Len() = 1  then sMillis$ = "00" + sMillis$
+            sMillis = millis.toStr()
+            if sMillis.len() = 2  then sMillis = "0" + sMillis
+            if sMillis.len() = 1  then sMillis = "00" + sMillis
 
-            return sHours$ + ":" + sMins$ + ":" + sSecs$ + ":" + sMillis$
+            return "[" + sHours + ":" + sMins + ":" + sSecs + ":" + sMillis + "] "
         end function
 
         _print: function(logLevel as Integer, output)
-            print "[" + m._getCurrentTime() + "] "; m._getGroupIndent(); m._getLabelFromLogLevel(logLevel); output
+            print m._getTimestamp(); m._getGroupIndent(); m._getLabelFromLogLevel(logLevel); output
         end function
 
         _getGroupIndent: function()
