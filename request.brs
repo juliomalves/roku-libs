@@ -6,38 +6,17 @@
 '**  Examples:
 '**  req = Request({url: "https://www.apiserver.com/content/0001", headers: reqHeaders, filePath: "tmp:/data.json"})
 '**  req.setTimeout(20000)
-'**  req.GetToFileRetry()
+'**  req.getToFileRetry()
 '**   
 '**  req = Request({url: "http://www.apiserver.com/content/0001", headers: reqHeaders, method: "DELETE"})
 '**  req.setTimeout(10000).setRetries(3)
-'**  req.AsyncGetToStringRetry() 
+'**  req.getToStringRetry() 
 '**  
 '**  req = Request({url: "http://www.apiserver.com/login", headers: reqHeaders, data: reqContent})
-'**  req.PostFromStringRetry()
+'**  req.postFromStringRetry()
 '********************************************************************
    
 function Request(reqObj as Object) as Object
-
-    createURLTransfer = function(reqObj as Object) as Object
-        urlTransfer = createObject("roUrlTransfer")
-        urlTransfer.setPort(createObject("roMessagePort"))
-        urlTransfer.setUrl(reqObj.url)
-        urlTransfer.retainBodyOnError(true)
-        urlTransfer.enableCookies()
-
-        if reqObj.method <> invalid then urlTransfer.setRequest(reqObj.method)
-        if reqObj.headers <> invalid then urlTransfer.setHeaders(reqObj.headers)
-        
-        'Checks if URL is secured, and adds appropriate parameters if needed
-        if left(reqObj.url, 5) = "https" then
-            urlTransfer.setCertificatesFile("common:/certs/ca-bundle.crt")
-            urlTransfer.addHeader("X-Roku-Reserved-Dev-Id", "")
-            urlTransfer.initClientCertificates()
-        end if
-        
-        return urlTransfer
-    end function
-
     obj = {
         _timeout: 10000 'Call timeout
         _interval: 500 'Interval between retry calls
@@ -48,9 +27,27 @@ function Request(reqObj as Object) as Object
             return createObject("roUrlTransfer").escape(str)
         end function
 
-        _http: createURLTransfer(reqObj)
+        _http: invalid
 
-        _createHttpRequest: createURLTransfer
+        _createHttpRequest: function(reqObj as Object) as Object
+            urlTransfer = createObject("roUrlTransfer")
+            urlTransfer.setPort(createObject("roMessagePort"))
+            urlTransfer.setUrl(reqObj.url)
+            urlTransfer.retainBodyOnError(true)
+            urlTransfer.enableCookies()
+
+            if reqObj.method <> invalid then urlTransfer.setRequest(reqObj.method)
+            if reqObj.headers <> invalid then urlTransfer.setHeaders(reqObj.headers)
+            
+            'Checks if URL is secured, and adds appropriate parameters if needed
+            if left(reqObj.url, 5) = "https" then
+                urlTransfer.setCertificatesFile("common:/certs/ca-bundle.crt")
+                urlTransfer.addHeader("X-Roku-Reserved-Dev-Id", "")
+                urlTransfer.initClientCertificates()
+            end if
+            
+            return urlTransfer
+        end function
 
         _reqObj: reqObj
 
@@ -85,18 +82,18 @@ function Request(reqObj as Object) as Object
             while retries > 0
                 if not m._deviceInfo.getLinkStatus() then return msg
                 
+                m._http = m._createHttpRequest(m._reqObj)
+                
                 if m._http.asyncGetToString() then
                     event = m._http.getPort().waitMessage(timeout)
 
                     if type(event) = "roUrlEvent" then
                         msg = event 
-                        if event.getResponseCode() < 300 then exit while 
+                        if event.getResponseCode() >= 200 and event.getResponseCode() < 300 then exit while 
                     end if
 
                     m._http.asyncCancel()
-                    m._http = m._createHttpRequest(m._reqObj)
-                    
-                    timeout = 2 * timeout
+                    timeout = timeout * 2
                     sleep(m._interval)
                 end if
 
@@ -114,18 +111,18 @@ function Request(reqObj as Object) as Object
             while retries > 0
                 if not m._deviceInfo.getLinkStatus() then return msg
                 
+                m._http = m._createHttpRequest(m._reqObj)
+
                 if m._http.asyncGetToFile(m._reqObj.filePath) then
                     event = m._http.getPort().waitMessage(timeout)
 
                     if type(event) = "roUrlEvent" then
                         msg = event 
-                        if event.getResponseCode() < 300 then exit while 
+                        if event.getResponseCode() >= 200 and event.getResponseCode() < 300 then exit while 
                     end if
 
                     m._http.asyncCancel()
-                    m._http = m._createHttpRequest(m._reqObj)
-                    
-                    timeout = 2 * timeout
+                    timeout = timeout * 2
                     sleep(m._interval)
                 end if
 
@@ -144,18 +141,18 @@ function Request(reqObj as Object) as Object
             while retries > 0
                 if not m._deviceInfo.getLinkStatus() then return msg
                 
+                m._http = m._createHttpRequest(m._reqObj)
+
                 if m._http.asyncPostFromString(postData) then
                     event = m._http.getPort().waitMessage(timeout)
 
                     if type(event) = "roUrlEvent" then
                         msg = event 
-                        if event.getResponseCode() < 300 then exit while 
+                        if event.getResponseCode() >= 200 and event.getResponseCode() < 300 then exit while 
                     end if
 
                     m._http.asyncCancel()
-                    m._http = m._createHttpRequest(m._reqObj)
-                    
-                    timeout = 2 * timeout
+                    timeout = timeout * 2
                     sleep(m._interval)
                 end if
 
