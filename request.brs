@@ -6,14 +6,14 @@
 '**  Examples:
 '**  req = Request({url: "https://www.apiserver.com/content/0001", headers: reqHeaders, filePath: "tmp:/data.json"})
 '**  req.setTimeout(20000)
-'**  req.getToFileRetry()
+'**  req.send()
 '**   
 '**  req = Request({url: "http://www.apiserver.com/content/0001", headers: reqHeaders, method: "DELETE"})
 '**  req.setTimeout(10000).setRetries(3)
-'**  req.getToStringRetry() 
+'**  req.send() 
 '**  
-'**  req = Request({url: "http://www.apiserver.com/login", headers: reqHeaders, data: reqContent})
-'**  req.postFromStringRetry()
+'**  req = Request({url: "http://www.apiserver.com/login", headers: reqHeaders, method: "POST"})
+'**  req.send(reqData)
 '********************************************************************
    
 function Request(reqObj as Object) as Object
@@ -74,17 +74,19 @@ function Request(reqObj as Object) as Object
             return m._http.getCookies(domain, path)
         end function
 
-        getToStringRetry: function() as Dynamic
+        send: function(data=invalid as Dynamic) as Dynamic
             timeout = m._timeout
             retries = m._retries
-            
             msg = invalid
+
+            if data <> invalid and getInterface(data, "ifString") = invalid then
+                data = formatJson(data)
+            end if
+
             while retries > 0
                 if not m._deviceInfo.getLinkStatus() then return msg
                 
-                m._http = m._createHttpRequest(m._reqObj)
-                
-                if m._http.asyncGetToString() then
+                if m._sendHttpRequest(data) then
                     event = m._http.getPort().waitMessage(timeout)
 
                     if type(event) = "roUrlEvent" then
@@ -103,63 +105,22 @@ function Request(reqObj as Object) as Object
             return msg
         end function
 
-        getToFileRetry: function() as Dynamic
-            timeout = m._timeout
-            retries = m._retries
-            
-            msg = invalid
-            while retries > 0
-                if not m._deviceInfo.getLinkStatus() then return msg
-                
-                m._http = m._createHttpRequest(m._reqObj)
+        _sendHttpRequest: function(data=invalid as Dynamic) as Dynamic
+            m._http = m._createHttpRequest(m._reqObj)
 
-                if m._http.asyncGetToFile(m._reqObj.filePath) then
-                    event = m._http.getPort().waitMessage(timeout)
-
-                    if type(event) = "roUrlEvent" then
-                        msg = event 
-                        if event.getResponseCode() >= 200 and event.getResponseCode() < 300 then exit while 
-                    end if
-
-                    m._http.asyncCancel()
-                    timeout = timeout * 2
-                    sleep(m._interval)
+            if lCase(m._http.getRequest()) = "post" or data <> invalid then
+                if m._reqObj.filePath <> invalid then
+                    return m._http.asyncPostFromFile(m._reqObj.filePath)
+                else
+                    return m._http.asyncPostFromString(data)
                 end if
-
-                retries--
-            end while
-            
-            return msg
-        end function
-
-        postFromStringRetry : function() as Dynamic
-            postData = formatJson(m._reqObj.data)
-            timeout = m._timeout
-            retries = m._retries
-            
-            msg = invalid
-            while retries > 0
-                if not m._deviceInfo.getLinkStatus() then return msg
-                
-                m._http = m._createHttpRequest(m._reqObj)
-
-                if m._http.asyncPostFromString(postData) then
-                    event = m._http.getPort().waitMessage(timeout)
-
-                    if type(event) = "roUrlEvent" then
-                        msg = event 
-                        if event.getResponseCode() >= 200 and event.getResponseCode() < 300 then exit while 
-                    end if
-
-                    m._http.asyncCancel()
-                    timeout = timeout * 2
-                    sleep(m._interval)
+            else
+                if m._reqObj.filePath <> invalid then
+                    return m._http.asyncGetToFile(m._reqObj.filePath)
+                else
+                    return m._http.asyncGetToString()
                 end if
-
-                retries--
-            end while
-            
-            return msg
+            end if
         end function
 
     }    
