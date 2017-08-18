@@ -6,9 +6,9 @@ function ConsoleLib(var = invalid) as Object
 
     console = {
 
-        _outputIdent: ""
         _timers: {}
         _groupLevel: 0
+        _outputIdent: ""
 
         log: function(msg)
             m._print(0, msg)

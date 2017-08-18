@@ -1,7 +1,5 @@
 '********************************************************************
 '**  request.brs
-'**  
-'**  Julio Alves, April 2016
 '********************************************************************
 '**  Examples:
 '**  req = Request({url: "https://www.apiserver.com/content/0001", headers: reqHeaders, filePath: "tmp:/data.json"})

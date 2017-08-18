@@ -3,8 +3,6 @@
 '   (Adapted from Roku Univesal Analytics Tracking Library
 '   https://github.com/thyngster/roku-universal-analytics)
 '
-'   Julio Alves, March 2017
-'
 '   Examples:
 '   Tracker init
 '   GA_Tracker().init("UA-12345678-90")
@@ -57,11 +55,11 @@ function GoogleAnalyticsLib() as Object
                 m._isTracking = true
             end function
 
-            getPort: function()
+            getPort: function() as Object
                 return m._port
             end function
 
-            getBaseObject: function
+            getBaseObject: function() as Object
                 return {
                     v: m._protocol
                     cid: m._clientID
