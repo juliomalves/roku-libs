@@ -2,7 +2,7 @@
 '**  RegistryService
 '********************************************************************
 
-function RegistryLib() as Object
+function RegistryUtil() as Object
     registry = {
 
         '** Writes value to Registry

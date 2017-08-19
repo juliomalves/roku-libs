@@ -59,7 +59,7 @@ function GoogleAnalyticsLib() as Object
                 return m._port
             end function
 
-            getBaseObject: function() as Object
+            _getBaseObject: function() as Object
                 return {
                     v: m._protocol
                     cid: m._clientID
@@ -70,7 +70,7 @@ function GoogleAnalyticsLib() as Object
             trackEvent: function(event as Object) as Dynamic
                 if not m._isTracking then return invalid
 
-                payload = getBaseObject()
+                payload = m._getBaseObject()
                 payload.append({
                     sr : m._display
                     vp : m._ratio
@@ -91,7 +91,7 @@ function GoogleAnalyticsLib() as Object
             trackScreen: function(screen as Object) as Dynamic
                 if not m._isTracking then return invalid
 
-                payload = getBaseObject()
+                payload = m._getBaseObject()
                 payload.append({
                     sr : m._display
                     vp : m._ratio
@@ -108,7 +108,7 @@ function GoogleAnalyticsLib() as Object
             trackTransaction: function(transaction as Object) as Dynamic
                 if not m._isTracking then return invalid
 
-                payload = getBaseObject()
+                payload = m._getBaseObject()
                 payload.append({
                     ds : "app"
                     t  : "transaction"
@@ -126,7 +126,7 @@ function GoogleAnalyticsLib() as Object
             trackItem: function(item as Object) as Dynamic
                 if not m._isTracking then return invalid
 
-                payload = getBaseObject()
+                payload = m._getBaseObject()
                 payload.append({
                     ds : "app"
                     t  : "item"

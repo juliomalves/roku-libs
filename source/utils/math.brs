@@ -2,7 +2,7 @@
 '   math.brs
 '
 '
-function MathLib() as Object
+function MathUtil() as Object
 
     math = {
         ceil: function(number as Float) as Integer
