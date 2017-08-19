@@ -1,0 +1,8 @@
+# Application
+build/
+package/
+Makefile
+
+# OS Generated Files
+__MACOSX
+.DS_Store
