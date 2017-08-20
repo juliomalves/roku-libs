@@ -5,6 +5,9 @@
 function MathUtil() as Object
 
     math = {
+        E: 2.71828
+        PI: 3.14159
+
         ceil: function(number as Float) as Integer
             i = int(number)
             if number > i then return i+1
