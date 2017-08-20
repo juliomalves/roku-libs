@@ -44,8 +44,9 @@ function GoogleAnalyticsLib() as Object
             _appVersion: ai.getVersion()
             _ratio: di.getDisplayAspectRatio()
             _display: di.getUIResolution().width.toStr() + "x" + di.getUIResolution().height.toStr()
-            _endpoint: "http://www.google-analytics.com/collect"'"https://ssl.google-analytics.com/collect"
+            _endpoint: "https://www.google-analytics.com/collect"
             _protocol: "1"
+            _payload: invalid
             _isTracking: false
             _port: createObject("roMessagePort")
             _url: invalid
@@ -142,19 +143,24 @@ function GoogleAnalyticsLib() as Object
                 return m._send(payload)
             end function
 
-            _send: function(payload as Object) as Object
-                m._url = m._createPayloadUrl(payload)
+            _send: function(payload as Object)
+                m._payload = m._encodePayload(payload)
 
                 req = createObject("roURLTransfer")
                 req.setMessagePort(m._port)
-                req.setUrl(m._url)
-                req.asyncGetToString()
+                req.setUrl(m._endpoint)
+                req.setRequest("POST")
+                req.setCertificatesFile("common:/certs/ca-bundle.crt")
+                req.addHeader("X-Roku-Reserved-Dev-Id", "")
+                req.initClientCertificates()
+                req.asyncPostFromString(m._payload)
 
-                return req
+                msg = req.getPort().waitMessage(0)
+                m._handleResponse(msg)
             end function
 
-            _createPayloadUrl: function(params as Object) as String
-                payload = "?"
+            _encodePayload: function(params as Object) as String
+                payload = ""
                 for each key in params
                     value = params[key]
                     if value <> invalid then
@@ -163,19 +169,19 @@ function GoogleAnalyticsLib() as Object
                 end for
                 payload = payload + "z=" + rnd(500).toStr()
 
-                return m._endpoint + payload
+                return payload
             end function
 
             _httpEncode: function(str as String) as String
                 return createObject("roUrlTransfer").escape(str)
             end function
 
-            handleResponse: function(msg)
+            _handleResponse: function(msg)
                 if type(msg) = "roUrlEvent" then
                     if msg.getResponseCode() >= 200 and msg.getResponseCode() < 300 then
-                        print "[GA-lib] Tracking successful: "; m._url
+                        print "[GA-lib] Tracking successful: "; m._endpoint + "?" + m._payload
                     else
-                        print "[GA-lib] Tracking failed: "; m._url
+                        print "[GA-lib] Tracking failed: "; m._endpoint + "?" + m._payload
                     end if
                 end if
             end function
