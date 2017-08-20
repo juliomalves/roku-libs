@@ -1,44 +1,48 @@
 '********************************************************************
-'**  request.brs
+'**  http-request.brs
 '********************************************************************
 '**  Examples:
-'**  req = Request({url: "https://www.apiserver.com/content/0001", headers: reqHeaders, filePath: "tmp:/data.json"})
+'**  req = HttpRequest("https://www.apiserver.com/content/0001")
 '**  req.setTimeout(20000)
 '**  req.send()
 '**   
-'**  req = Request({url: "http://www.apiserver.com/content/0001", headers: reqHeaders, method: "DELETE"})
+'**  req = HttpRequest("http://www.apiserver.com/content/0001", "DELETE")
 '**  req.setTimeout(10000).setRetries(3)
 '**  req.send() 
 '**  
-'**  req = Request({url: "http://www.apiserver.com/login", headers: reqHeaders, method: "POST"})
-'**  req.send(reqData)
+'**  req = HttpRequest("http://www.apiserver.com/login", "POST")
+'**  req.setRequestHeaders({"Content-Type": "application/json"})
+'**  req.send({user: "johndoe", password: "12345"})
+'**  req.abort()
 '********************************************************************
    
-function Request(reqObj as Object) as Object
+function HttpRequest(url as String, method=invalid as Dynamic) as Object
     obj = {
-        _timeout: 10000 'Call timeout
-        _interval: 500 'Interval between retry calls
-        _retries: 1 'Number of call retries
+        _timeout: 0
+        _interval: 500
+        _retries: 1
         _deviceInfo: createObject("roDeviceInfo")
-        
-        _httpEncode: function(str as String) as String
-            return createObject("roUrlTransfer").escape(str)
+        _url: url
+        _method: method
+        _requestHeaders: {}
+        _http: invalid
+        _isAborted: false
+
+        _isUrlSecure: function(url as String) as Boolean
+            return left(url, 5) = "https"
         end function
 
-        _http: invalid
-
-        _createHttpRequest: function(reqObj as Object) as Object
+        _createHttpRequest: function() as Object
             urlTransfer = createObject("roUrlTransfer")
             urlTransfer.setPort(createObject("roMessagePort"))
-            urlTransfer.setUrl(reqObj.url)
+            urlTransfer.setUrl(m._url)
             urlTransfer.retainBodyOnError(true)
             urlTransfer.enableCookies()
-
-            if reqObj.method <> invalid then urlTransfer.setRequest(reqObj.method)
-            if reqObj.headers <> invalid then urlTransfer.setHeaders(reqObj.headers)
+            urlTransfer.setHeaders(m._requestHeaders)
+            if m._method <> invalid then urlTransfer.setRequest(m._method)
             
             'Checks if URL is secured, and adds appropriate parameters if needed
-            if left(reqObj.url, 5) = "https" then
+            if m._isUrlSecure(m._url) then
                 urlTransfer.setCertificatesFile("common:/certs/ca-bundle.crt")
                 urlTransfer.addHeader("X-Roku-Reserved-Dev-Id", "")
                 urlTransfer.initClientCertificates()
@@ -46,8 +50,6 @@ function Request(reqObj as Object) as Object
             
             return urlTransfer
         end function
-
-        _reqObj: reqObj
 
         setTimeout: function(value as Integer)
             _timeout = value
@@ -63,33 +65,48 @@ function Request(reqObj as Object) as Object
             _retries = value
             return m
         end function
+        
+        setRequestHeaders: function(headers as Object)
+            m._requestHeaders = headers
+        end function
 
         getPort: function()
-            return m._http.getPort()
+            if m._http <> invalid then
+                return m._http.getPort()
+            else 
+                return invalid
+            end if
         end function
 
         getCookies: function(domain as String, path as String) as Object
-            return m._http.getCookies(domain, path)
+            if m._http <> invalid then
+                return m._http.getCookies(domain, path)
+            else 
+                return invalid
+            end if
         end function
 
         send: function(data=invalid as Dynamic) as Dynamic
             timeout = m._timeout
-            retries = m._retries
-            msg = invalid
+            response = invalid
 
             if data <> invalid and getInterface(data, "ifString") = invalid then
                 data = formatJson(data)
             end if
 
-            while retries > 0
-                if not m._deviceInfo.getLinkStatus() then return msg
+            while m._retries > 0
+                if not m._deviceInfo.getLinkStatus() then return response
                 
                 if m._sendHttpRequest(data) then
                     event = m._http.getPort().waitMessage(timeout)
 
-                    if type(event) = "roUrlEvent" then
-                        msg = event 
-                        if event.getResponseCode() >= 200 and event.getResponseCode() < 300 then exit while 
+                    if m._isAborted then 
+                        m._isAborted = false
+                        m._http.asyncCancel()
+                        exit while
+                    else if type(event) = "roUrlEvent" then
+                        response = event 
+                        exit while
                     end if
 
                     m._http.asyncCancel()
@@ -100,25 +117,21 @@ function Request(reqObj as Object) as Object
                 retries--
             end while
             
-            return msg
+            return response
         end function
 
         _sendHttpRequest: function(data=invalid as Dynamic) as Dynamic
-            m._http = m._createHttpRequest(m._reqObj)
+            m._http = m._createHttpRequest()
 
-            if lCase(m._http.getRequest()) = "post" or data <> invalid then
-                if m._reqObj.filePath <> invalid then
-                    return m._http.asyncPostFromFile(m._reqObj.filePath)
-                else
-                    return m._http.asyncPostFromString(data)
-                end if
+            if data <> invalid then
+                return m._http.asyncPostFromString(data)
             else
-                if m._reqObj.filePath <> invalid then
-                    return m._http.asyncGetToFile(m._reqObj.filePath)
-                else
-                    return m._http.asyncGetToString()
-                end if
+                return m._http.asyncGetToString()
             end if
+        end function
+
+        abort: function()
+            m._isAborted = true
         end function
 
     }    
