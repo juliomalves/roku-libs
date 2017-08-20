@@ -50,7 +50,7 @@ function TestCase__GoogleAnalytics_Global()
 end function
 
 function TestCase__GoogleAnalytics_Functions()
-    expectedFunctions = ["init", "getPort", "trackEvent", "trackScreen", "trackTransaction", "trackItem", "handleResponse"]
+    expectedFunctions = ["init", "getPort", "trackEvent", "trackScreen", "trackTransaction", "trackItem"]
     return m.assertAAHasKeys(m.testObject, expectedFunctions)
 end function
 
