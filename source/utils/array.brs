@@ -23,6 +23,20 @@ function ArrayUtil() as Object
             return -1
         end function
 
+        lastIndexOf: function(arr as Object, element as Dynamic) as Integer
+            if not m._isArray(arr) then return -1
+
+            size = arr.count()
+
+            if size = 0 then return -1
+
+            for i = size - 1 to 0 step -1
+                if arr[i] = element then return i
+            end for
+
+            return -1
+        end function
+
         slice: function(arr as Object, fromIndex as Integer, toIndex as Integer)
             if not m._isArray(arr) then return invalid
 

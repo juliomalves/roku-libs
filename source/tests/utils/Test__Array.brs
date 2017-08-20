@@ -17,6 +17,7 @@ function TestSuite__Array() as Object
     this.addTest("should create object with expected functions", TestCase__Array_Functions)
     this.addTest("contains should check whether or not the array contains given value", TestCase__Array_Contains)
     this.addTest("indexOf should return first index of element equal to given value", TestCase__Array_IndexOf)
+    this.addTest("lastIndexOf should return last index of element equal to given value", TestCase__Array_LastIndexOf)
     this.addTest("slice should extract a section of the array", TestCase__Array_Slice)
     this.addTest("map should create an array with the results of calling the function on every element of the array", TestCase__Array_Map)
     this.addTest("reduce should reduce array to a single accumulator value", TestCase__Array_Reduce)
@@ -64,6 +65,16 @@ function TestCase__Array_IndexOf()
     values.push(m.testObject.indexOf(arr, 3))
     values.push(m.testObject.indexOf(arr, 8))
     values.push(m.testObject.indexOf(arr, 1.5))
+    return m.assertEqual(values, expectedValues)
+end function
+
+function TestCase__Array_LastIndexOf()
+    expectedValues = [3,-1,-1]
+    arr = [1,2,3,3,5]
+    values = []
+    values.push(m.testObject.lastIndexOf(arr, 3))
+    values.push(m.testObject.lastIndexOf(arr, 8))
+    values.push(m.testObject.lastIndexOf(arr, 1.5))
     return m.assertEqual(values, expectedValues)
 end function
 
