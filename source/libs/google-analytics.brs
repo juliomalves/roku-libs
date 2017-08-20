@@ -164,7 +164,7 @@ function GoogleAnalyticsLib() as Object
                 for each key in params
                     value = params[key]
                     if value <> invalid then
-                        payload = payload + key + "=" + m._httpEncode(value) + "&"
+                        payload = payload + key + "=" + m._encodeUri(value) + "&"
                     end if
                 end for
                 payload = payload + "z=" + rnd(500).toStr()
@@ -172,7 +172,7 @@ function GoogleAnalyticsLib() as Object
                 return payload
             end function
 
-            _httpEncode: function(str as String) as String
+            _encodeUri: function(str as String) as String
                 return createObject("roUrlTransfer").escape(str)
             end function
 
