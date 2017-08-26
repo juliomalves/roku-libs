@@ -4,48 +4,39 @@
 '   https://github.com/thyngster/roku-universal-analytics)
 '
 '   Examples:
-'   Tracker init
-'   GA_Tracker().init("UA-12345678-90")
+'   - Tracker init
+'   googleAnalytics = GoogleAnalyticsLib()
+'   googleAnalytics.init("UA-12345678-90")
 '
-'   Event tracking
-'   GA_Tracker().trackEvent({ category: "application", action: "launch"})
+'   - Event tracking
+'   googleAnalytics = GoogleAnalyticsLib()
+'   googleAnalytics.trackEvent({ category: "application", action: "launch"})
 '
-'   Screen tracking
-'   GA_Tracker().trackScreen({ name: "mainScreen" })
+'   - Screen tracking
+'   googleAnalytics = GoogleAnalyticsLib()
+'   googleAnalytics.trackScreen({ name: "mainScreen" })
 '
-'   E-Commerce tracking
-'   GA_Tracker().trackTransaction({ id: "OD564", revenue: "10.00"})
-'   GA_Tracker().trackItem({ transactionId: "OD564", name: "Test01", price: "10.00", code: "TEST001", category: "vod"})
+'   - E-Commerce tracking
+'   googleAnalytics = GoogleAnalyticsLib()
+'   googleAnalytics.trackTransaction({ id: "OD564", revenue: "10.00"})
+'   googleAnalytics.trackItem({ transactionId: "OD564", name: "Test01", price: "10.00", code: "TEST001", category: "vod"})
 '
 
 function GoogleAnalyticsLib() as Object
 
     if m.analytics = invalid then
 
-        getDeviceVersion = function() as String
-            version = createObject("roDeviceInfo").getVersion()
-
-            major = mid(version, 3, 1)
-            minor = mid(version, 5, 2)
-            build = mid(version, 9, 4)
-
-            return major + "." + minor + "." + build
-        end function
-
         ai = createObject("roAppInfo")
         di = createObject("roDeviceInfo")
 
         m.analytics = {
-            _trackingID: invalid
-            _clientID: di.getClientTrackingId()
-            _deviceModel: di.getModel()
-            _deviceVersion: getDeviceVersion()
-            _appName: ai.getTitle()
-            _appVersion: ai.getVersion()
-            _ratio: di.getDisplayAspectRatio()
-            _display: di.getUIResolution().width.toStr() + "x" + di.getUIResolution().height.toStr()
+            _baseParams: {
+                v: "1",
+                cid: di.getClientTrackingId(),
+                an : ai.getTitle(),
+                av : ai.getVersion()
+            }
             _endpoint: "https://www.google-analytics.com/collect"
-            _protocol: "1"
             _payload: invalid
             _enabled: false
             _sequence: 1
@@ -53,31 +44,22 @@ function GoogleAnalyticsLib() as Object
             _sentRequests: {}
 
             init: function(trackingId as String)
-                m._trackingID = trackingId
+                m._baseParams["tid"] = trackingId
                 m._enabled = true
+            end function
+
+            setParams: function(customParams as Object)
+                m._baseParams.append(customParams)
             end function
 
             getPort: function() as Object
                 return m._port
             end function
 
-            _getBaseObject: function() as Object
-                return {
-                    v: m._protocol
-                    cid: m._clientID
-                    tid: m._trackingID
-                }
-            end function
-
             trackEvent: function(event as Object) as Dynamic
                 if not m._enabled then return invalid
 
-                payload = m._getBaseObject()
-                payload.append({
-                    sr : m._display
-                    vp : m._ratio
-                    an : m._appName
-                    av : m._appVersion
+                payload = {
                     ds : "app"
                     t  : "event"
                     ec : event.category
@@ -85,7 +67,7 @@ function GoogleAnalyticsLib() as Object
                     el : event.label
                     ev : event.value
                     cd1 : event.dim1
-                })
+                }
 
                 return m._send(payload)
             end function
@@ -93,16 +75,11 @@ function GoogleAnalyticsLib() as Object
             trackScreen: function(screen as Object) as Dynamic
                 if not m._enabled then return invalid
 
-                payload = m._getBaseObject()
-                payload.append({
-                    sr : m._display
-                    vp : m._ratio
-                    an : m._appName
-                    av : m._appVersion
+                payload = {
                     ds : "app"
                     t  : "screenview"
                     cd : screen.name
-                })
+                }
                 
                 return m._send(payload)
             end function
@@ -110,8 +87,7 @@ function GoogleAnalyticsLib() as Object
             trackTransaction: function(transaction as Object) as Dynamic
                 if not m._enabled then return invalid
 
-                payload = m._getBaseObject()
-                payload.append({
+                payload = {
                     ds : "app"
                     t  : "transaction"
                     ta : "roku"
@@ -120,7 +96,7 @@ function GoogleAnalyticsLib() as Object
                     tt : transaction.tax
                     cu : transaction.currencyCode
                     cd1 : transaction.dim1
-                })
+                }
 
                 return m._send(payload)
             end function
@@ -128,8 +104,7 @@ function GoogleAnalyticsLib() as Object
             trackItem: function(item as Object) as Dynamic
                 if not m._enabled then return invalid
 
-                payload = m._getBaseObject()
-                payload.append({
+                payload = {
                     ds : "app"
                     t  : "item"
                     iq : item.quantity
@@ -139,12 +114,13 @@ function GoogleAnalyticsLib() as Object
                     cu : item.currencyCode
                     ic : item.code
                     iv : item.category
-                })
+                }
 
                 return m._send(payload)
             end function
 
             _send: function(payload as Object)
+                payload.append(m._baseParams)
                 m._payload = m._encodePayload(payload)
                 
                 req = createObject("roURLTransfer")
