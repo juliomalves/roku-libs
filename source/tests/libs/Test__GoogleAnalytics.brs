@@ -23,27 +23,15 @@ function TestSuite__GoogleAnalytics() as Object
     return this
 end function
 
-'----------------------------------------------------------------
-' This function called immediately before running tests of current suite.
-' This function called to prepare all data for testing.
-'----------------------------------------------------------------
 sub GoogleAnalyticsTestSuite__SetUp()
-    ' Target testing object. To avoid the object creation in each test
-    ' we create instance of target object here and use it in tests as m.targetTestObject.
     m.testObject = GoogleAnalyticsLib()
 end sub
 
-'----------------------------------------------------------------
-' This function called immediately after running tests of current suite.
-' This function called to clean or remove all data for testing.
-'----------------------------------------------------------------
 sub GoogleAnalyticsTestSuite__TearDown()
-    ' Remove all the test data
     m.testObject = invalid
     m.delete("testObject")
     getGlobalAA().delete("analytics")
 end sub
-
 
 function TestCase__GoogleAnalytics_Global()
     return m.assertNotInvalid(getGlobalAA()["analytics"])
@@ -55,20 +43,17 @@ function TestCase__GoogleAnalytics_Functions()
 end function
 
 function TestCase__GoogleAnalytics_NotTracking()
-    expectedValues = [invalid, invalid, invalid, invalid]
-    values = []
-    values.push(m.testObject.trackEvent({category: "app", action: "test"}))
-    values.push(m.testObject.trackScreen({name: "testScreen"}))
-    values.push(m.testObject.trackTransaction({id: "1234", revenue: "12.34"}))
-    values.push(m.testObject.trackItem({transactionId: "1234", name: "dummy", price: "12.34", code: "TEST01", category: "test"}))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertFalse(m.testObject._enabled)
+    result = m.assertInvalid(m.testObject.trackEvent({category: "app", action: "test"})) + result
+    result = m.assertInvalid(m.testObject.trackScreen({name: "testScreen"})) + result
+    result = m.assertInvalid(m.testObject.trackTransaction({id: "1234", revenue: "12.34"})) + result
+    result = m.assertInvalid(m.testObject.trackItem({transactionId: "1234", name: "dummy", price: "12.34", code: "TEST01", category: "test"})) + result
+    return result
 end function
 
 function TestCase__GoogleAnalytics_Init()
     m.testObject.init("D-UMMY-ID")
-    expectedValues = ["D-UMMY-ID", true]
-    values = []
-    values.push(m.testObject._trackingID)
-    values.push(m.testObject._isTracking)
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject._trackingID, "D-UMMY-ID")
+    result = m.assertTrue(m.testObject._enabled) + result
+    return result
 end function

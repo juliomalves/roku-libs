@@ -47,13 +47,13 @@ function GoogleAnalyticsLib() as Object
             _endpoint: "https://www.google-analytics.com/collect"
             _protocol: "1"
             _payload: invalid
-            _isTracking: false
+            _enabled: false
             _port: createObject("roMessagePort")
-            _url: invalid
+            _sentRequests: {}
 
             init: function(trackingId as String)
                 m._trackingID = trackingId
-                m._isTracking = true
+                m._enabled = true
             end function
 
             getPort: function() as Object
@@ -69,7 +69,7 @@ function GoogleAnalyticsLib() as Object
             end function
 
             trackEvent: function(event as Object) as Dynamic
-                if not m._isTracking then return invalid
+                if not m._enabled then return invalid
 
                 payload = m._getBaseObject()
                 payload.append({
@@ -90,7 +90,7 @@ function GoogleAnalyticsLib() as Object
             end function
 
             trackScreen: function(screen as Object) as Dynamic
-                if not m._isTracking then return invalid
+                if not m._enabled then return invalid
 
                 payload = m._getBaseObject()
                 payload.append({
@@ -107,7 +107,7 @@ function GoogleAnalyticsLib() as Object
             end function
 
             trackTransaction: function(transaction as Object) as Dynamic
-                if not m._isTracking then return invalid
+                if not m._enabled then return invalid
 
                 payload = m._getBaseObject()
                 payload.append({
@@ -125,7 +125,7 @@ function GoogleAnalyticsLib() as Object
             end function
 
             trackItem: function(item as Object) as Dynamic
-                if not m._isTracking then return invalid
+                if not m._enabled then return invalid
 
                 payload = m._getBaseObject()
                 payload.append({
@@ -155,6 +155,8 @@ function GoogleAnalyticsLib() as Object
                 req.initClientCertificates()
                 req.asyncPostFromString(m._payload)
 
+                m._sentRequests[req.getIdentity().toStr()] = req
+
                 msg = req.getPort().waitMessage(0)
                 m._handleResponse(msg)
             end function
@@ -178,10 +180,10 @@ function GoogleAnalyticsLib() as Object
 
             _handleResponse: function(msg)
                 if type(msg) = "roUrlEvent" then
-                    if msg.getResponseCode() >= 200 and msg.getResponseCode() < 300 then
-                        print "[GA-lib] Tracking successful: "; m._endpoint + "?" + m._payload
-                    else
-                        print "[GA-lib] Tracking failed: "; m._endpoint + "?" + m._payload
+                    sourceIdentity = msg.getSourceIdentity().toStr()
+                    if m._sentRequests[sourceIdentity] <> invalid then
+                        print "[GA-lib] Response: "; msg.getResponseCode(); " "; msg.getFailureReason(); " @ "; m._endpoint + "?" + m._payload
+                        m._sentRequests.delete(sourceIdentity)
                     end if
                 end if
             end function
