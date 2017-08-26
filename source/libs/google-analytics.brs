@@ -48,6 +48,7 @@ function GoogleAnalyticsLib() as Object
             _protocol: "1"
             _payload: invalid
             _enabled: false
+            _sequence: 1
             _port: createObject("roMessagePort")
             _sentRequests: {}
 
@@ -145,20 +146,20 @@ function GoogleAnalyticsLib() as Object
 
             _send: function(payload as Object)
                 m._payload = m._encodePayload(payload)
-
+                
                 req = createObject("roURLTransfer")
                 req.setMessagePort(m._port)
                 req.setUrl(m._endpoint)
                 req.setRequest("POST")
                 req.setCertificatesFile("common:/certs/ca-bundle.crt")
-                req.addHeader("X-Roku-Reserved-Dev-Id", "")
                 req.initClientCertificates()
+                req.addHeader("X-Roku-Reserved-Dev-Id", "")
+                req.addHeader("Content-Type", "text/plain")
                 req.asyncPostFromString(m._payload)
 
                 m._sentRequests[req.getIdentity().toStr()] = req
 
-                msg = req.getPort().waitMessage(0)
-                m._handleResponse(msg)
+                m._cleanupRequests()
             end function
 
             _encodePayload: function(params as Object) as String
@@ -169,8 +170,8 @@ function GoogleAnalyticsLib() as Object
                         payload = payload + key + "=" + m._encodeUri(value) + "&"
                     end if
                 end for
-                payload = payload + "z=" + rnd(500).toStr()
-
+                payload = payload + "z=" + m._sequence.toStr()'rnd(500).toStr()
+                m._sequence++
                 return payload
             end function
 
@@ -178,14 +179,14 @@ function GoogleAnalyticsLib() as Object
                 return createObject("roUrlTransfer").escape(str)
             end function
 
-            _handleResponse: function(msg)
-                if type(msg) = "roUrlEvent" then
-                    sourceIdentity = msg.getSourceIdentity().toStr()
-                    if m._sentRequests[sourceIdentity] <> invalid then
-                        print "[GA-lib] Response: "; msg.getResponseCode(); " "; msg.getFailureReason(); " @ "; m._endpoint + "?" + m._payload
-                        m._sentRequests.delete(sourceIdentity)
+            _cleanupRequests: function()
+                for each request in m._sentRequests
+                    msg = m._port.getMessage()
+                    if type(msg) = "roUrlEvent" then
+                        requestId = msg.getSourceIdentity().toStr()
+                        if msg.getInt() = 1 then m._sentRequests.delete(requestId)
                     end if
-                end if
+                end for
             end function
 
         }

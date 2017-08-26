@@ -25,18 +25,10 @@ function TestSuite__Array() as Object
     return this
 end function
 
-'----------------------------------------------------------------
-' This function called immediately before running tests of current suite.
-' This function called to prepare all data for testing.
-'----------------------------------------------------------------
 sub ArrayTestSuite__SetUp()
     m.testObject = ArrayUtil()
 end sub
 
-'----------------------------------------------------------------
-' This function called immediately after running tests of current suite.
-' This function called to clean or remove all data for testing.
-'----------------------------------------------------------------
 sub ArrayTestSuite__TearDown()
     m.testObject = invalid
     m.delete("testObject")
