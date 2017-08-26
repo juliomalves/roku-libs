@@ -24,10 +24,11 @@ function TestSuite__GoogleAnalytics() as Object
     this.addTest("should not send tracking data if tracking is not enabled", TestCase__GoogleAnalytics_NotTracking)
     this.addTest("can initialize correct params", TestCase__GoogleAnalytics_Init)
     this.addTest("can set custom params", TestCase__GoogleAnalytics_SetParams)
-    this.addTest("can send correct track event request", TestCase__GoogleAnalytics_TrackEvent)
-    this.addTest("can send correct track screen request", TestCase__GoogleAnalytics_TrackScreen)
-    this.addTest("can send correct track transaction request", TestCase__GoogleAnalytics_TrackTransaction)
-    this.addTest("can send correct track item request", TestCase__GoogleAnalytics_TrackItem)
+    this.addTest("can send track event request", TestCase__GoogleAnalytics_TrackEvent)
+    this.addTest("can send track screen request", TestCase__GoogleAnalytics_TrackScreen)
+    this.addTest("can send track transaction request", TestCase__GoogleAnalytics_TrackTransaction)
+    this.addTest("can send track item request", TestCase__GoogleAnalytics_TrackItem)
+    this.addTest("can send track timing request", TestCase__GoogleAnalytics_TrackTiming)
     this.addTest("can send batch tracking events to multiple tracking ids", TestCase__GoogleAnalytics_BatchRequest)
     this.addTest("should cleanup requests", TestCase__GoogleAnalytics_CleanupRequests)
 
@@ -41,7 +42,8 @@ sub GoogleAnalyticsTestSuite__SetUp()
         v: "1",
         cid: "ce451d12-e1c2-4f6c-b74a-9ed4aeb66584",
         an : "AppName",
-        av : "1.2.3"
+        av : "1.2.3",
+        ds : "app"
     }
     m.testObject._endpoint = "http://127.0.0.1:54321"
     ' Mock server that will receive requests
@@ -88,7 +90,8 @@ function TestCase__GoogleAnalytics_SetParams()
         v: "1",
         cid: "ce451d12-e1c2-4f6c-b74a-9ed4aeb66584",
         an : "AppName",
-        av : "1.2.3"
+        av : "1.2.3",
+        ds : "app"
     }
     customParams = {sr: "1280x800", ul: "en-gb"}
     baseParams.append(customParams)
@@ -130,6 +133,14 @@ function TestCase__GoogleAnalytics_TrackItem()
     m.testObject.trackItem({ transactionId: "OD564", name: "Test01", price: "10.00", code: "TEST001", category: "vod"})
     request = m.HandleMockServerEvent(m.mockServer)
     return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&ip=10.00&v=1&ti=OD564&iv=vod&in=Test01&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&ic=TEST001&t=item&z=1")
+end function
+
+function TestCase__GoogleAnalytics_TrackTiming()
+    m.testObject.init("D-UMMY-ID")
+    m.testObject._sequence = 1
+    m.testObject.trackTiming({category: "test", variable: "test", time: "1000"})
+    request = m.HandleMockServerEvent(m.mockServer)
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&utv=test&av=1.2.3&utc=test&v=1&utt=1000&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=timing&z=1")
 end function
 
 function TestCase__GoogleAnalytics_BatchRequest()

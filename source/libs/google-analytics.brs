@@ -34,7 +34,8 @@ function GoogleAnalyticsLib() as Object
                 v: "1",
                 cid: di.getClientTrackingId(),
                 an : ai.getTitle(),
-                av : ai.getVersion()
+                av : ai.getVersion(),
+                ds : "app"
             }
             _trackingId: invalid
             _endpoint: "https://www.google-analytics.com"
@@ -60,7 +61,6 @@ function GoogleAnalyticsLib() as Object
                 if not m._enabled then return invalid
 
                 payload = {
-                    ds : "app"
                     t  : "event"
                     ec : event.category
                     ea : event.action
@@ -76,7 +76,6 @@ function GoogleAnalyticsLib() as Object
                 if not m._enabled then return invalid
 
                 payload = {
-                    ds : "app"
                     t  : "screenview"
                     cd : screen.name
                 }
@@ -88,7 +87,6 @@ function GoogleAnalyticsLib() as Object
                 if not m._enabled then return invalid
 
                 payload = {
-                    ds : "app"
                     t  : "transaction"
                     ta : "roku"
                     ti : transaction.id
@@ -105,7 +103,6 @@ function GoogleAnalyticsLib() as Object
                 if not m._enabled then return invalid
 
                 payload = {
-                    ds : "app"
                     t  : "item"
                     iq : item.quantity
                     ti : item.transactionId
@@ -116,6 +113,21 @@ function GoogleAnalyticsLib() as Object
                     iv : item.category
                 }
 
+                return m._send(payload)
+            end function
+
+            trackTiming: function(timing as Object) as Dynamic
+                if not m._enabled then return invalid
+
+                payload = {
+                    t : "timing"
+                    utc : timing.category
+                    utv : timing.variable
+                    utt : timing.time
+                    plt : timing.loadTime
+                    srt : timing.responseTime
+                }
+                
                 return m._send(payload)
             end function
 
