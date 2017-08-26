@@ -24,7 +24,7 @@ function StringUtil() as Object
 
         replace: function(str as String, pattern as String, replacement as String) as String
             regexObj = createObject("roRegex", pattern, "")
-            return regexObj.replace(str, replacement)
+            return regexObj.replaceAll(str, replacement)
         end function
 
         truncate: function(str as String, length as Integer, ellipsis="" as String) as String
