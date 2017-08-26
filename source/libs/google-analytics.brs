@@ -36,15 +36,15 @@ function GoogleAnalyticsLib() as Object
                 an : ai.getTitle(),
                 av : ai.getVersion()
             }
-            _endpoint: "https://www.google-analytics.com/collect"
-            _payload: invalid
+            _trackingId: invalid
+            _endpoint: "https://www.google-analytics.com"
             _enabled: false
             _sequence: 1
             _port: createObject("roMessagePort")
             _sentRequests: {}
 
-            init: function(trackingId as String)
-                m._baseParams["tid"] = trackingId
+            init: function(trackingId as Dynamic)
+                m._trackingId = trackingId ' Either a string or an array of strings
                 m._enabled = true
             end function
 
@@ -121,17 +121,18 @@ function GoogleAnalyticsLib() as Object
 
             _send: function(payload as Object)
                 payload.append(m._baseParams)
-                m._payload = m._encodePayload(payload)
+                encodedPayload = m._encodePayload(payload)
+                data = m._createPostData(encodedPayload)
                 
                 req = createObject("roURLTransfer")
                 req.setMessagePort(m._port)
-                req.setUrl(m._endpoint)
+                req.setUrl(m._endpoint + data.endpoint)
                 req.setRequest("POST")
                 req.setCertificatesFile("common:/certs/ca-bundle.crt")
                 req.initClientCertificates()
                 req.addHeader("X-Roku-Reserved-Dev-Id", "")
                 req.addHeader("Content-Type", "text/plain")
-                req.asyncPostFromString(m._payload)
+                req.asyncPostFromString(data.body)
 
                 m._sentRequests[req.getIdentity().toStr()] = req
 
@@ -153,6 +154,21 @@ function GoogleAnalyticsLib() as Object
 
             _encodeUri: function(str as String) as String
                 return createObject("roUrlTransfer").escape(str)
+            end function
+
+            _createPostData: function(payload as String) as Object
+                body = ""
+                if getInterface(m._trackingId, "ifString") = invalid then
+                    endpoint = "/batch"
+                    for each id in m._trackingId
+                        body += "tid=" + m._encodeUri(id) + "&" + payload + chr(10)
+                    end for
+                    body = body.left(body.len()-1)
+                else
+                    endpoint = "/collect"
+                    body = "tid=" + m._encodeUri(m._trackingId) + "&" + payload
+                end if
+                return { endpoint: endpoint, body: body }
             end function
 
             _cleanupRequests: function()

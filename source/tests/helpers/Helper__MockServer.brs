@@ -28,11 +28,10 @@ function Helper__HandleMockServerEvent(server as Object) as Object
             connection.send("HTTP/1.1 200 OK" + chr(13) + chr(10) + chr(13) + chr(10), 0, 19)
             connection.close()
             ' Parse request
-            requestString = buffer.toAsciiString()
             request.code = 200
-            regex = createObject("roRegex", "(?<=[\n\r])(.*)$", "")
-            bodyMatches = regex.match(requestString)
-            if bodyMatches.count() > 0 then request.data = bodyMatches[0]
+            regex = createObject("roRegex", "(?<=\s)\s.*", "s")
+            requestBody = regex.match(buffer.toAsciiString())
+            if requestBody.count() > 0 then request.data = requestBody[0].trim()
         end if
     end if
     return request

@@ -28,6 +28,7 @@ function TestSuite__GoogleAnalytics() as Object
     this.addTest("can send correct track screen request", TestCase__GoogleAnalytics_TrackScreen)
     this.addTest("can send correct track transaction request", TestCase__GoogleAnalytics_TrackTransaction)
     this.addTest("can send correct track item request", TestCase__GoogleAnalytics_TrackItem)
+    this.addTest("can send batch tracking events to multiple tracking ids", TestCase__GoogleAnalytics_BatchRequest)
     this.addTest("should cleanup requests", TestCase__GoogleAnalytics_CleanupRequests)
 
     return this
@@ -42,7 +43,7 @@ sub GoogleAnalyticsTestSuite__SetUp()
         an : "AppName",
         av : "1.2.3"
     }
-    m.testObject._endpoint = "http://127.0.0.1:54321/"
+    m.testObject._endpoint = "http://127.0.0.1:54321"
     ' Mock server that will receive requests
     m.mockServer = m.CreateMockServer("127.0.0.1", 54321)
 end sub
@@ -76,7 +77,7 @@ end function
 
 function TestCase__GoogleAnalytics_Init()
     m.testObject.init("D-UMMY-ID")
-    result = m.assertEqual(m.testObject._baseParams.tid, "D-UMMY-ID")
+    result = m.assertEqual(m.testObject._trackingId, "D-UMMY-ID")
     result += m.assertTrue(m.testObject._enabled)
     return result
 end function
@@ -87,8 +88,7 @@ function TestCase__GoogleAnalytics_SetParams()
         v: "1",
         cid: "ce451d12-e1c2-4f6c-b74a-9ed4aeb66584",
         an : "AppName",
-        av : "1.2.3",
-        tid: "D-UMMY-ID"
+        av : "1.2.3"
     }
     customParams = {sr: "1280x800", ul: "en-gb"}
     baseParams.append(customParams)
@@ -105,7 +105,7 @@ function TestCase__GoogleAnalytics_TrackEvent()
     m.testObject._sequence = 1
     m.testObject.trackEvent({ category: "app", action: "launch"})
     request = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(request.data, "av=1.2.3&v=1&ea=launch&tid=D-UMMY-ID&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=event&z=1")
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&v=1&ea=launch&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=event&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackScreen()
@@ -113,7 +113,7 @@ function TestCase__GoogleAnalytics_TrackScreen()
     m.testObject._sequence = 1
     m.testObject.trackScreen({name: "testScreen"})
     request = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(request.data, "av=1.2.3&cd=testScreen&v=1&tid=D-UMMY-ID&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=screenview&z=1")
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&cd=testScreen&v=1&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=screenview&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackTransaction()
@@ -121,7 +121,7 @@ function TestCase__GoogleAnalytics_TrackTransaction()
     m.testObject._sequence = 1
     m.testObject.trackTransaction({ id: "OD564", revenue: "10.00"})
     request = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(request.data, "av=1.2.3&tr=10.00&v=1&tid=D-UMMY-ID&ti=OD564&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ta=roku&ds=app&an=AppName&t=transaction&z=1")
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&tr=10.00&v=1&ti=OD564&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ta=roku&ds=app&an=AppName&t=transaction&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackItem()
@@ -129,7 +129,24 @@ function TestCase__GoogleAnalytics_TrackItem()
     m.testObject._sequence = 1
     m.testObject.trackItem({ transactionId: "OD564", name: "Test01", price: "10.00", code: "TEST001", category: "vod"})
     request = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(request.data, "av=1.2.3&ip=10.00&v=1&tid=D-UMMY-ID&ti=OD564&iv=vod&in=Test01&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&ic=TEST001&t=item&z=1")
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&ip=10.00&v=1&ti=OD564&iv=vod&in=Test01&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&ic=TEST001&t=item&z=1")
+end function
+
+function TestCase__GoogleAnalytics_BatchRequest()
+    processBatchData = function(data as String) as Object
+        regex = createObject("roRegex", "\s", "")
+        dataArr = regex.split(data)
+        return dataArr
+    end function
+
+    m.testObject.init(["D-UMMY-ID", "D-UMMY-ID2"])
+    m.testObject._sequence = 1
+    m.testObject.trackEvent({ category: "app", action: "launch"})
+    request = m.HandleMockServerEvent(m.mockServer)
+    data = processBatchData(request.data)
+    result = m.assertEqual(data[0], "tid=D-UMMY-ID&av=1.2.3&v=1&ea=launch&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=event&z=1")
+    result += m.assertEqual(data[1], "tid=D-UMMY-ID2&av=1.2.3&v=1&ea=launch&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=event&z=1")
+    return result
 end function
 
 function TestCase__GoogleAnalytics_CleanupRequests()
