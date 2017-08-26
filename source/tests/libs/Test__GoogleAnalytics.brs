@@ -15,8 +15,8 @@ function TestSuite__GoogleAnalytics() as Object
     this.TearDown = GoogleAnalyticsTestSuite__TearDown
 
     ' Helper functions
-    this.CreateMockServer = GoogleAnalyticsTestSuite__CreateMockServer
-    this.HandleMockServerEvent = GoogleAnalyticsTestSuite__HandleMockServerEvent
+    this.CreateMockServer = Helper__CreateMockServer
+    this.HandleMockServerEvent = Helper__HandleMockServerEvent
 
     ' Add tests to suite's tests collection
     this.addTest("should create global object", TestCase__GoogleAnalytics_Global)
@@ -85,32 +85,32 @@ function TestCase__GoogleAnalytics_TrackEvent()
     m.testObject.init("D-UMMY-ID")
     m.testObject._sequence = 1
     m.testObject.trackEvent({ category: "app", action: "launch"})
-    payload = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(payload, "av=1.2.3&vp=16-9&ea=launch&v=1&tid=D-UMMY-ID&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&sr=1280x720&an=AppName&t=event&z=1")
+    request = m.HandleMockServerEvent(m.mockServer)
+    return m.assertEqual(request.data, "av=1.2.3&vp=16-9&ea=launch&v=1&tid=D-UMMY-ID&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&sr=1280x720&an=AppName&t=event&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackScreen()
     m.testObject.init("D-UMMY-ID")
     m.testObject._sequence = 1
     m.testObject.trackScreen({name: "testScreen"})
-    payload = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(payload, "av=1.2.3&cd=testScreen&vp=16-9&v=1&tid=D-UMMY-ID&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&sr=1280x720&an=AppName&t=screenview&z=1")
+    request = m.HandleMockServerEvent(m.mockServer)
+    return m.assertEqual(request.data, "av=1.2.3&cd=testScreen&vp=16-9&v=1&tid=D-UMMY-ID&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&sr=1280x720&an=AppName&t=screenview&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackTransaction()
     m.testObject.init("D-UMMY-ID")
     m.testObject._sequence = 1
     m.testObject.trackTransaction({ id: "OD564", revenue: "10.00"})
-    payload = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(payload, "tr=10.00&v=1&tid=D-UMMY-ID&ti=OD564&ta=roku&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&t=transaction&z=1")
+    request = m.HandleMockServerEvent(m.mockServer)
+    return m.assertEqual(request.data, "tr=10.00&v=1&tid=D-UMMY-ID&ti=OD564&ta=roku&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&t=transaction&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackItem()
     m.testObject.init("D-UMMY-ID")
     m.testObject._sequence = 1
     m.testObject.trackItem({ transactionId: "OD564", name: "Test01", price: "10.00", code: "TEST001", category: "vod"})
-    payload = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(payload, "ip=10.00&v=1&tid=D-UMMY-ID&ti=OD564&iv=vod&in=Test01&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&t=item&ic=TEST001&z=1")
+    request = m.HandleMockServerEvent(m.mockServer)
+    return m.assertEqual(request.data, "ip=10.00&v=1&tid=D-UMMY-ID&ti=OD564&iv=vod&in=Test01&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&t=item&ic=TEST001&z=1")
 end function
 
 function TestCase__GoogleAnalytics_CleanupRequests()
@@ -120,39 +120,4 @@ function TestCase__GoogleAnalytics_CleanupRequests()
     m.HandleMockServerEvent(m.mockServer)
     m.testObject._cleanupRequests()
     return m.assertEmpty(m.testObject._sentRequests)
-end function
-
-function GoogleAnalyticsTestSuite__CreateMockServer(hostName as String, port as Integer) as Object
-    messagePort = createObject("roMessagePort")
-    server = createObject("roStreamSocket")
-    server.setMessagePort(messagePort)
-    address = createObject("roSocketAddress")
-    address.setHostName(hostName)
-    address.setPort(port)
-    server.setAddress(address)
-    server.notifyReadable(true)
-    server.listen(1)
-    return server
-end function
-
-' Respond with HTTP 200 OK, and return payload sent in the request
-function GoogleAnalyticsTestSuite__HandleMockServerEvent(server as Object) as String
-    buffer = createObject("roByteArray")
-    buffer[1024] = 0
-    sentPayload = ""
-    msg = server.getMessagePort().waitMessage(1000)
-    if type(msg) = "roSocketEvent" then
-        if msg.getSocketID() = server.getID() and server.isReadable() then
-            connection = server.accept()
-            connection.receive(buffer, 0, 1024)
-            ' Send an HTTP 200 response
-            connection.send("HTTP/1.1 200 OK" + chr(13) + chr(10) + chr(13) + chr(10), 0, 19)
-            connection.close()
-            ' Parse response body for payload
-            regex = createObject("roRegex", "(?<=\r\n\r\n)(.*)", "")
-            matches = regex.match(buffer.toAsciiString())
-            if matches.count() > 0 then sentPayload = matches[0]
-        end if
-    end if
-    return sentPayload
 end function
