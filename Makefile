@@ -1,10 +1,9 @@
-APPNAME = roku-utils
-VERSION = 0.3.0
-IP = 192.168.1.1
-USERNAME = rokudev
-USERPASS = password
+APPNAME = roku-libs
+VERSION ?= 0.3.0
+IP ?= 192.168.1.1
+USERNAME ?= rokudev
+USERPASS ?= password
 ZIP_EXCLUDE = -x \*.pkg -x keys\* -x LICENSE\* -x \*.md -x \*/.\* -x .\* -x build\* -x package\*
-
 PKGREL = ./package
 ZIPREL = ./build
 SOURCEREL = ..
@@ -52,7 +51,7 @@ remove:
 # Close current app to avoid crashes
 	@curl -d "" "http://$(IP):8060/keypress/home"
 	@sleep 1
-	
+
 	@echo "    Removing $(APPNAME) from host $(IP)"
 	@curl --user $(USERNAME):$(USERPASS) --digest -s -S -F "mysubmit=Delete" -F "archive=" -F "passwd=" http://$(IP)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//" | sed "s[</font>[[" ; \
 
@@ -60,22 +59,35 @@ tests: install
 	@echo "    Running tests at $(IP)"
 	@curl -d '' "http://${IP}:8060/launch/dev?RunTests=true"
 
+package: DEVIDPASS ?= "$(shell read -p "    Developer ID password: " REPLY; echo $$REPLY)"
 package: install
-	@echo "    Creating package file"
-
-	@echo "    Creating destination directory $(PKGREL)"	
+# Create destination directory
 	@if [ ! -d $(PKGREL) ]; \
 	then \
 		mkdir -p $(PKGREL); \
 	fi
 
-	@echo "    Setting directory permissions for $(PKGREL)"
+# Set directory permissions
 	@if [ ! -w $(PKGREL) ]; \
 	then \
 		chmod 755 $(PKGREL); \
 	fi
 
-	@echo "    Packaging $(APPNAME) on host $(IP)"
-	@read -p "Password: " REPLY ; echo $$REPLY | xargs -i curl --user $(USERNAME):$(USERPASS) --digest -s -S -Fmysubmit=Package -Fapp_name=$(APPNAME)/$(VERSION) -Fpasswd={} -Fpkg_time=`expr \`date +%s\` \* 1000` "http://$(IP)/plugin_package" | grep '^<font face=' | sed 's/.*href=\"\([^\"]*\)\".*/\1/' | sed 's#pkgs/##' | xargs -i curl --user $(USERNAME):$(USERPASS) --digest -s -S -o $(PKGREL)/$(APPNAME)_{} http://$(IP)/pkgs/{}
+# Package application on remote device
+	@echo "    Packaging $(APPNAME) to host $(IP)"
+	$(eval PKGFILE := $(shell curl --anyauth -u $(USERNAME):$(USERPASS) -s -S -Fmysubmit=Package -Fapp_name=$(APPNAME)/$(VERSION) -Fpasswd=$(DEVIDPASS) -Fpkg_time=`date +%s` "http://$(IP)/plugin_package" | grep 'pkgs' | sed 's/.*href=\"\([^\"]*\)\".*/\1/' | sed 's#pkgs//##'))
+	@if [ -z $(PKGFILE) ]; \
+	then \
+		echo "    Package creation failed! Check if your device has been rekeyed"; \
+		exit 1; \
+	fi
 
-	@echo "    Package $(APPNAME) complete" 
+# Dowload package from device
+	$(eval PKGFULLPATH := $(PKGREL)/$(APPNAME)-$(VERSION)_$(PKGFILE))
+	@curl --user $(USERNAME):$(USERPASS) --digest -s -S -o $(PKGFULLPATH) http://$(IP)/pkgs/$(PKGFILE)
+	@if [ ! -f ""$(PKGFULLPATH)"" ]; \
+	then \
+		echo "    Package download failed! File does not exist: $(PKGFULLPATH)"; \
+		exit 2; \
+	fi
+	@echo "    Package downloaded to: $(PKGFULLPATH)"
