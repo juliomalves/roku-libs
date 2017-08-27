@@ -38,7 +38,8 @@ function GoogleAnalyticsLib() as Object
                 ds : "app"
             }
             _trackingId: invalid
-            _endpoint: "https://www.google-analytics.com"
+            _endpoint: "https://www.google-analytics.com/collect"
+            _endpointBatch: "https://www.google-analytics.com/batch"
             _enabled: false
             _sequence: 1
             _port: createObject("roMessagePort")
@@ -88,12 +89,12 @@ function GoogleAnalyticsLib() as Object
 
                 payload = {
                     t  : "transaction"
-                    ta : "roku"
+                    ta : transaction.affiliation
                     ti : transaction.id
                     tr : transaction.revenue
                     tt : transaction.tax
+                    ts : transaction.shipping
                     cu : transaction.currencyCode
-                    cd1 : transaction.dim1
                 }
 
                 return m._send(payload)
@@ -138,7 +139,7 @@ function GoogleAnalyticsLib() as Object
                 
                 req = createObject("roURLTransfer")
                 req.setMessagePort(m._port)
-                req.setUrl(m._endpoint + data.endpoint)
+                req.setUrl(data.endpoint)
                 req.setRequest("POST")
                 req.setCertificatesFile("common:/certs/ca-bundle.crt")
                 req.initClientCertificates()
@@ -171,13 +172,13 @@ function GoogleAnalyticsLib() as Object
             _createPostData: function(payload as String) as Object
                 body = ""
                 if getInterface(m._trackingId, "ifString") = invalid then
-                    endpoint = "/batch"
+                    endpoint = m._endpointBatch
                     for each id in m._trackingId
                         body += "tid=" + m._encodeUri(id) + "&" + payload + chr(10)
                     end for
                     body = body.left(body.len()-1)
                 else
-                    endpoint = "/collect"
+                    endpoint = m._endpoint
                     body = "tid=" + m._encodeUri(m._trackingId) + "&" + payload
                 end if
                 return { endpoint: endpoint, body: body }

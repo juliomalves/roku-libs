@@ -46,6 +46,7 @@ sub GoogleAnalyticsTestSuite__SetUp()
         ds : "app"
     }
     m.testObject._endpoint = "http://127.0.0.1:54321"
+    m.testObject._endpointBatch = "http://127.0.0.1:54321"
     ' Mock server that will receive requests
     m.mockServer = m.CreateMockServer("127.0.0.1", 54321)
 end sub
@@ -124,7 +125,7 @@ function TestCase__GoogleAnalytics_TrackTransaction()
     m.testObject._sequence = 1
     m.testObject.trackTransaction({ id: "OD564", revenue: "10.00"})
     request = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&tr=10.00&v=1&ti=OD564&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ta=roku&ds=app&an=AppName&t=transaction&z=1")
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&tr=10.00&v=1&ti=OD564&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=transaction&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackItem()
@@ -144,19 +145,26 @@ function TestCase__GoogleAnalytics_TrackTiming()
 end function
 
 function TestCase__GoogleAnalytics_BatchRequest()
-    processBatchData = function(data as String) as Object
+    processBatchData = function(data as Dynamic) as Object
+        if data = invalid then return []
         regex = createObject("roRegex", "\s", "")
         dataArr = regex.split(data)
         return dataArr
     end function
 
+    expectedData = [
+        "tid=D-UMMY-ID&av=1.2.3&v=1&ea=launch&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=event&z=1",
+        "tid=D-UMMY-ID2&av=1.2.3&v=1&ea=launch&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=event&z=1"
+    ]
     m.testObject.init(["D-UMMY-ID", "D-UMMY-ID2"])
     m.testObject._sequence = 1
     m.testObject.trackEvent({ category: "app", action: "launch"})
     request = m.HandleMockServerEvent(m.mockServer)
-    data = processBatchData(request.data)
-    result = m.assertEqual(data[0], "tid=D-UMMY-ID&av=1.2.3&v=1&ea=launch&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=event&z=1")
-    result += m.assertEqual(data[1], "tid=D-UMMY-ID2&av=1.2.3&v=1&ea=launch&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=event&z=1")
+    dataArr = processBatchData(request.data)
+    result = m.assertNotEmpty(dataArr)
+    for i = 0 to dataArr.count() - 1
+        result += m.assertEqual(dataArr[i], expectedData[i])
+    end for
     return result
 end function
 

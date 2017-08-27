@@ -2,7 +2,7 @@ sub main(args as Dynamic)
     console = ConsoleUtil()
     console.log("Hello World")
 
-    if type(TestRunner) = "Function" then
+    if args.RunTests <> invalid and type(TestRunner) = "Function" then
         Runner = TestRunner()
         Runner.logger.PrintStatistic = customPrintStatistic
         Runner.SetFailFast(true)
