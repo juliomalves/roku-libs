@@ -7,6 +7,8 @@
 '   - Tracker init
 '   googleAnalytics = GoogleAnalyticsLib()
 '   googleAnalytics.init("UA-12345678-90")
+'   OR with multiple tracking ids
+'   googleAnalytics.init(["UA-12345678-90", ..., "UA-09876543-21"])
 '
 '   - Event tracking
 '   googleAnalytics = GoogleAnalyticsLib()
@@ -20,6 +22,14 @@
 '   googleAnalytics = GoogleAnalyticsLib()
 '   googleAnalytics.trackTransaction({ id: "OD564", revenue: "10.00"})
 '   googleAnalytics.trackItem({ transactionId: "OD564", name: "Test01", price: "10.00", code: "TEST001", category: "vod"})
+'
+'   - Timing tracking
+'   googleAnalytics = GoogleAnalyticsLib()
+'   googleAnalytics.trackTiming({ category: "category", variable: "timing", time: "1000" })
+'
+'   - Exception tracking
+'   googleAnalytics = GoogleAnalyticsLib()
+'   googleAnalytics.trackException({ description: "description", isFatal: "1" })
 '
 
 function GoogleAnalyticsLib() as Object
@@ -131,6 +141,19 @@ function GoogleAnalyticsLib() as Object
                 
                 return m._send(payload)
             end function
+
+            trackException: function(exception as Object) as Dynamic
+                if not m._enabled then return invalid
+
+                payload = {
+                    t : "exception"
+                    exd : exception.description
+                    exf : exception.isFatal
+                }
+                
+                return m._send(payload)
+            end function
+            
 
             _send: function(payload as Object)
                 payload.append(m._baseParams)

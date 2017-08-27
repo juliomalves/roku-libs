@@ -29,6 +29,7 @@ function TestSuite__GoogleAnalytics() as Object
     this.addTest("can send track transaction request", TestCase__GoogleAnalytics_TrackTransaction)
     this.addTest("can send track item request", TestCase__GoogleAnalytics_TrackItem)
     this.addTest("can send track timing request", TestCase__GoogleAnalytics_TrackTiming)
+    this.addTest("can send track exception request", TestCase__GoogleAnalytics_TrackException)
     this.addTest("can send batch tracking events to multiple tracking ids", TestCase__GoogleAnalytics_BatchRequest)
     this.addTest("should cleanup requests", TestCase__GoogleAnalytics_CleanupRequests)
 
@@ -65,7 +66,7 @@ function TestCase__GoogleAnalytics_Global()
 end function
 
 function TestCase__GoogleAnalytics_Functions()
-    expectedFunctions = ["init", "setParams", "getPort", "trackEvent", "trackScreen", "trackTransaction", "trackItem"]
+    expectedFunctions = ["init", "setParams", "getPort", "trackEvent", "trackScreen", "trackTransaction", "trackItem", "trackTiming", "trackException"]
     return m.assertAAHasKeys(m.testObject, expectedFunctions)
 end function
 
@@ -87,17 +88,17 @@ end function
 
 function TestCase__GoogleAnalytics_SetParams()
     m.testObject.init("D-UMMY-ID")
-    baseParams = {
+    expectedParams = {
         v: "1",
         cid: "ce451d12-e1c2-4f6c-b74a-9ed4aeb66584",
         an : "AppName",
         av : "1.2.3",
-        ds : "app"
+        ds : "app",
+        sr: "1280x800", 
+        ul: "en-gb"
     }
-    customParams = {sr: "1280x800", ul: "en-gb"}
-    baseParams.append(customParams)
-    m.testObject.setParams(customParams)
-    result = m.assertEqual(m.testObject._baseParams, baseParams)
+    m.testObject.setParams({sr: "1280x800", ul: "en-gb"})
+    result = m.assertEqual(m.testObject._baseParams, expectedParams)
     ' Set baseParams back to original ones
     m.testObject._baseParams.delete("sr")
     m.testObject._baseParams.delete("ul")
@@ -142,6 +143,14 @@ function TestCase__GoogleAnalytics_TrackTiming()
     m.testObject.trackTiming({category: "test", variable: "test", time: "1000"})
     request = m.HandleMockServerEvent(m.mockServer)
     return m.assertEqual(request.data, "tid=D-UMMY-ID&utv=test&av=1.2.3&utc=test&v=1&utt=1000&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=timing&z=1")
+end function
+
+function TestCase__GoogleAnalytics_TrackException()
+    m.testObject.init("D-UMMY-ID")
+    m.testObject._sequence = 1
+    m.testObject.trackException({description: "description", isFatal: "1"})
+    request = m.HandleMockServerEvent(m.mockServer)
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&exd=description&exf=1&v=1&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=exception&z=1")
 end function
 
 function TestCase__GoogleAnalytics_BatchRequest()
