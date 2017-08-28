@@ -92,6 +92,7 @@ function HttpRequest() as Object
         open: function(url as String, method=invalid as Dynamic)
             m._url = url
             m._method = method
+            return m
         end function
 
         send: function(data=invalid as Dynamic) as Dynamic

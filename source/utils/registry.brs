@@ -26,7 +26,7 @@ function RegistryUtil() as Object
 
         '** Retrieve all entries in the specified section
         '@param section Registry section name
-        readAll: function(section = "default" as String) as Object
+        readSection: function(section = "default" as String) as Object
             sec = createObject("roRegistrySection", section)
             aa = {}
             keyList = sec.getKeyList()

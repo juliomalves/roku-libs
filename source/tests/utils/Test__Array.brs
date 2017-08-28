@@ -36,7 +36,7 @@ end sub
 
 
 function TestCase__Array_Functions()
-    expectedFunctions = ["contains", "indexOf", "slice", "map", "_isArray"]
+    expectedFunctions = ["contains", "indexOf", "lastIndexOf", "slice", "map", "reduce"]
     return m.assertAAHasKeys(m.testObject, expectedFunctions)
 end function
 

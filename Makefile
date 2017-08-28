@@ -1,9 +1,9 @@
 APPNAME = roku-libs
 VERSION ?= 0.3.0
-IP ?= 192.168.1.1
+DEVICEIP ?= 192.168.1.1
 USERNAME ?= rokudev
 USERPASS ?= password
-ZIP_EXCLUDE = -x \*.pkg -x keys\* -x LICENSE\* -x \*.md -x \*/.\* -x .\* -x build\* -x package\*
+ZIPEXCLUDE = -x \*.pkg -x keys\* -x LICENSE\* -x \*.md -x \*/.\* -x .\* -x build\* -x package\*
 PKGREL = ./package
 ZIPREL = ./build
 SOURCEREL = ..
@@ -33,31 +33,31 @@ zip:
 	@echo "    Creating application zip: $(ZIPREL)/$(APPNAME).zip"	
 	@if [ -d $(SOURCEREL)/$(APPNAME) ]; \
 	then \
-		(zip -q -0 -r "$(ZIPREL)/$(APPNAME).zip" . -i \*.png $(ZIP_EXCLUDE)); \
-		(zip -q -9 -r "$(ZIPREL)/$(APPNAME).zip" . -x \*~ -x \*.png -x Makefile $(ZIP_EXCLUDE)); \
+		(zip -q -0 -r "$(ZIPREL)/$(APPNAME).zip" . -i \*.png $(ZIPEXCLUDE)); \
+		(zip -q -9 -r "$(ZIPREL)/$(APPNAME).zip" . -x \*~ -x \*.png -x Makefile $(ZIPEXCLUDE)); \
 	else \
 		echo "    Source for $(APPNAME) not found at $(SOURCEREL)/$(APPNAME)"; \
 	fi
 
 install: zip
 # Close current app to avoid crashes
-	@curl -d "" "http://$(IP):8060/keypress/home"
+	@curl -d "" "http://$(DEVICEIP):8060/keypress/home"
 	@sleep 1
 
-	@echo "    Installing $(APPNAME).zip to host $(IP)"
-	@curl --user $(USERNAME):$(USERPASS) --digest -s -S -F "mysubmit=Install" -F "archive=@$(ZIPREL)/$(APPNAME).zip" -F "passwd=" http://$(IP)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//" | sed "s[</font>[[" ; \
+	@echo "    Installing $(APPNAME).zip to host $(DEVICEIP)"
+	@curl --user $(USERNAME):$(USERPASS) --digest -s -S -F "mysubmit=Install" -F "archive=@$(ZIPREL)/$(APPNAME).zip" -F "passwd=" http://$(DEVICEIP)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//" | sed "s[</font>[[" ; \
 
 remove:
 # Close current app to avoid crashes
-	@curl -d "" "http://$(IP):8060/keypress/home"
+	@curl -d "" "http://$(DEVICEIP):8060/keypress/home"
 	@sleep 1
 
-	@echo "    Removing $(APPNAME) from host $(IP)"
-	@curl --user $(USERNAME):$(USERPASS) --digest -s -S -F "mysubmit=Delete" -F "archive=" -F "passwd=" http://$(IP)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//" | sed "s[</font>[[" ; \
+	@echo "    Removing $(APPNAME) from host $(DEVICEIP)"
+	@curl --user $(USERNAME):$(USERPASS) --digest -s -S -F "mysubmit=Delete" -F "archive=" -F "passwd=" http://$(DEVICEIP)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//" | sed "s[</font>[[" ; \
 
 tests: install
-	@echo "    Running tests at $(IP)"
-	@curl -d '' "http://${IP}:8060/launch/dev?RunTests=true"
+	@echo "    Running tests at $(DEVICEIP)"
+	@curl -d '' "http://${DEVICEIP}:8060/launch/dev?RunTests=true"
 
 package: DEVIDPASS ?= "$(shell read -p "    Developer ID password: " REPLY; echo $$REPLY)"
 package: install
@@ -74,8 +74,8 @@ package: install
 	fi
 
 # Package application on remote device
-	@echo "    Packaging $(APPNAME) to host $(IP)"
-	$(eval PKGFILE := $(shell curl --anyauth -u $(USERNAME):$(USERPASS) -s -S -Fmysubmit=Package -Fapp_name=$(APPNAME)/$(VERSION) -Fpasswd=$(DEVIDPASS) -Fpkg_time=`date +%s` "http://$(IP)/plugin_package" | grep 'pkgs' | sed 's/.*href=\"\([^\"]*\)\".*/\1/' | sed 's#pkgs//##'))
+	@echo "    Packaging $(APPNAME) to host $(DEVICEIP)"
+	$(eval PKGFILE := $(shell curl --anyauth -u $(USERNAME):$(USERPASS) -s -S -Fmysubmit=Package -Fapp_name=$(APPNAME)/$(VERSION) -Fpasswd=$(DEVIDPASS) -Fpkg_time=`date +%s` "http://$(DEVICEIP)/plugin_package" | grep 'pkgs' | sed 's/.*href=\"\([^\"]*\)\".*/\1/' | sed 's#pkgs//##'))
 	@if [ -z $(PKGFILE) ]; \
 	then \
 		echo "    Package creation failed! Check if your device has been rekeyed"; \
@@ -84,7 +84,7 @@ package: install
 
 # Dowload package from device
 	$(eval PKGFULLPATH := $(PKGREL)/$(APPNAME)-$(VERSION)_$(PKGFILE))
-	@curl --user $(USERNAME):$(USERPASS) --digest -s -S -o $(PKGFULLPATH) http://$(IP)/pkgs/$(PKGFILE)
+	@curl --user $(USERNAME):$(USERPASS) --digest -s -S -o $(PKGFULLPATH) http://$(DEVICEIP)/pkgs/$(PKGFILE)
 	@if [ ! -f ""$(PKGFULLPATH)"" ]; \
 	then \
 		echo "    Package download failed! File does not exist: $(PKGFULLPATH)"; \

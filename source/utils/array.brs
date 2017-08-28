@@ -42,11 +42,11 @@ function ArrayUtil() as Object
 
             size = arr.count()
             slicedArr = []
-
-            if fromIndex >= size OR fromIndex > toIndex then return slicedArr
             
             if fromIndex < 0 then fromIndex = 0
             if toIndex >= size then toIndex = size - 1
+
+            if fromIndex >= size OR fromIndex > toIndex then return slicedArr
 
             for i=fromIndex to toIndex
                 slicedArr.push(arr[i])
