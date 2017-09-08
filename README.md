@@ -167,7 +167,7 @@ strUtil.indexOf(str, "ra")          // 2
 strUtil.match(str, "(ab)(ra)", "i") // ["Abra","Ab","ra"]
 strUtil.replace(str, "Cad", "-")    // "Abra-abra"
 strUtil.truncate(str, 4, "...")     // "Abra..."
-strUtil.toMD5(str, 4, "...")        // "3aa51d002ab23a353b13df9ba059b4fc"
+strUtil.toMD5(str)        // "3aa51d002ab23a353b13df9ba059b4fc"
 ```
 
 ### [Math Utilities](./source/utils/string.brs)
@@ -194,7 +194,7 @@ This utility makes it easier to deal with `roRegistry` and `roRegistrySection` o
 
 Example usages:
 ```javascript
-registry = RegistryUtil
+registry = RegistryUtil()
 
 registry.write("myKey", "myValue", "mySection") // Replaces the value of the specified key for a given section
 registry.read("myKey", "mySection")   // Reads and returns the value of the specified key from a given section
