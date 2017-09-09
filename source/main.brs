@@ -3,10 +3,9 @@ sub main(args as Dynamic)
     console.log("Hello World")
 
     if args.RunTests <> invalid and type(TestRunner) = "Function" then
-        Runner = TestRunner()
-        Runner.logger.PrintStatistic = customPrintStatistic
-        Runner.SetFailFast(true)
-        Runner.Run()
+        runner = TestRunner()
+        runner.logger.PrintStatistic = customPrintStatistic
+        runner.run()
     end if
 end sub
 

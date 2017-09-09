@@ -591,8 +591,11 @@ End Function
 '
 ' @return True if values are equal or False in other case.
 '----------------------------------------------------------------
-Function BTS__EqValues(Value1 as dynamic, Value2 as dynamic) as Boolean
-    return m.baseComparator(value1, value2)
+Function BTS__EqValues(Value1 as dynamic, Value2 as dynamic, comparator as dynamic) as Boolean
+    if comparator = invalid 
+        comparator = m.baseComparator
+    end if
+    return comparator(value1, value2)
 End Function
 
 '----------------------------------------------------------------
@@ -1464,9 +1467,9 @@ function TestRunner__Run(statObj = m.logger.CreateTotalStatistic() as Object, te
                     testCase.TearDown()
                 end if
 
-                ' if testStatObj.Result = "Fail" and m.failFast
-                '     exit for
-                ' end if
+                if testStatObj.Result = "Fail" and m.failFast
+                    exit for
+                end if
             end if
         end for
 
@@ -1477,9 +1480,9 @@ function TestRunner__Run(statObj = m.logger.CreateTotalStatistic() as Object, te
             testSuite.TearDown()
         end if
 
-        ' if testStatObj.Result = "Fail" and m.failFast
-        '     exit for
-        ' end if
+        if testStatObj.Result = "Fail" and m.failFast
+            exit for
+        end if
     end for
 
     if m.isNodeMode
