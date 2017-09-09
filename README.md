@@ -167,7 +167,7 @@ strUtil.indexOf(str, "ra")          // 2
 strUtil.match(str, "(ab)(ra)", "i") // ["Abra","Ab","ra"]
 strUtil.replace(str, "Cad", "-")    // "Abra-abra"
 strUtil.truncate(str, 4, "...")     // "Abra..."
-strUtil.toMD5(str)        // "3aa51d002ab23a353b13df9ba059b4fc"
+strUtil.toMD5(str)                  // "3aa51d002ab23a353b13df9ba059b4fc"
 ```
 
 ### [Math Utilities](./source/utils/string.brs)
