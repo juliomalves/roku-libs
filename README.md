@@ -25,8 +25,9 @@ The Makefile included provides a few simple rules to help with the app installat
 
 From a terminal, you can first start by exporting the following variables
 ```bash
-export DEVICEIP=your_device_IP
-export USERPASS=your_dev_mode_password
+export DEVICEIP=<your_device_IP>
+export USER=<your_dev_mode_user>
+export USERPASS=<your_dev_mode_password>
 ```
 To run the unit tests (output will be available on the [debug console](https://sdkdocs.roku.com/display/sdkdoc/Debugging+Your+Application#DebuggingYourApplication-Accessingthedebugconsole))
 ```bash
