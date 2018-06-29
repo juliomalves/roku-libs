@@ -5,3 +5,4 @@ package/
 # OS Generated Files
 __MACOSX
 .DS_Store
+.vscode
