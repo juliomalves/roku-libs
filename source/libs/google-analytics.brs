@@ -177,10 +177,9 @@ function GoogleAnalyticsLib() as Object
 
             _encodePayload: function(params as Object) as String
                 payload = ""
-                for each key in params
-                    value = params[key]
-                    if value <> invalid then
-                        payload = payload + key + "=" + m._encodeUri(value) + "&"
+                for each item in params.items()
+                    if item.value <> invalid then
+                        payload = payload + item.key + "=" + m._encodeUri(item.value) + "&"
                     end if
                 end for
                 payload = payload + "z=" + m._sequence.toStr()'rnd(500).toStr()

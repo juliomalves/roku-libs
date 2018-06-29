@@ -110,7 +110,7 @@ function TestCase__GoogleAnalytics_TrackEvent()
     m.testObject._sequence = 1
     m.testObject.trackEvent({ category: "app", action: "launch"})
     request = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&v=1&ea=launch&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=event&z=1")
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&ea=launch&ec=app&t=event&v=1&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackScreen()
@@ -118,7 +118,7 @@ function TestCase__GoogleAnalytics_TrackScreen()
     m.testObject._sequence = 1
     m.testObject.trackScreen({name: "testScreen"})
     request = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&cd=testScreen&v=1&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=screenview&z=1")
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cd=testScreen&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&t=screenview&v=1&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackTransaction()
@@ -126,7 +126,7 @@ function TestCase__GoogleAnalytics_TrackTransaction()
     m.testObject._sequence = 1
     m.testObject.trackTransaction({ id: "OD564", revenue: "10.00"})
     request = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&tr=10.00&v=1&ti=OD564&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=transaction&z=1")
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&t=transaction&ti=OD564&tr=10.00&v=1&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackItem()
@@ -134,7 +134,7 @@ function TestCase__GoogleAnalytics_TrackItem()
     m.testObject._sequence = 1
     m.testObject.trackItem({ transactionId: "OD564", name: "Test01", price: "10.00", code: "TEST001", category: "vod"})
     request = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&ip=10.00&v=1&ti=OD564&iv=vod&in=Test01&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&ic=TEST001&t=item&z=1")
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&ic=TEST001&in=Test01&ip=10.00&iv=vod&t=item&ti=OD564&v=1&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackTiming()
@@ -142,7 +142,7 @@ function TestCase__GoogleAnalytics_TrackTiming()
     m.testObject._sequence = 1
     m.testObject.trackTiming({category: "test", variable: "test", time: "1000"})
     request = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(request.data, "tid=D-UMMY-ID&utv=test&av=1.2.3&utc=test&v=1&utt=1000&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=timing&z=1")
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&t=timing&utc=test&utt=1000&utv=test&v=1&z=1")
 end function
 
 function TestCase__GoogleAnalytics_TrackException()
@@ -150,7 +150,7 @@ function TestCase__GoogleAnalytics_TrackException()
     m.testObject._sequence = 1
     m.testObject.trackException({description: "description", isFatal: "1"})
     request = m.HandleMockServerEvent(m.mockServer)
-    return m.assertEqual(request.data, "tid=D-UMMY-ID&av=1.2.3&exd=description&exf=1&v=1&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=exception&z=1")
+    return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&exd=description&exf=1&t=exception&v=1&z=1")
 end function
 
 function TestCase__GoogleAnalytics_BatchRequest()
@@ -162,8 +162,8 @@ function TestCase__GoogleAnalytics_BatchRequest()
     end function
 
     expectedData = [
-        "tid=D-UMMY-ID&av=1.2.3&v=1&ea=launch&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=event&z=1",
-        "tid=D-UMMY-ID2&av=1.2.3&v=1&ea=launch&ec=app&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&an=AppName&t=event&z=1"
+        "tid=D-UMMY-ID&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&ea=launch&ec=app&t=event&v=1&z=1",
+        "tid=D-UMMY-ID2&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&ea=launch&ec=app&t=event&v=1&z=1"
     ]
     m.testObject.init(["D-UMMY-ID", "D-UMMY-ID2"])
     m.testObject._sequence = 1
