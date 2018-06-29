@@ -14,10 +14,6 @@ function TestSuite__HttpRequest() as Object
     this.SetUp = HttpRequestTestSuite__SetUp
     this.TearDown = HttpRequestTestSuite__TearDown
 
-    ' Helper functions
-    this.CreateMockServer = Helper__CreateMockServer
-    this.HandleMockServerEvent = Helper__HandleMockServerEvent
-
     ' Add tests to suite's tests collection
     this.addTest("should create object with expected functions", TestCase__HttpRequest_Functions)
     this.addTest("setTimeout should be chainable and set timeout property", TestCase__HttpRequest_SetTimeout)
@@ -35,11 +31,12 @@ end function
 sub HttpRequestTestSuite__SetUp()
     m.testObject = HttpRequest()
     ' Mock server that will receive requests
-    m.mockServer = m.CreateMockServer("127.0.0.1", 54321)
+    m.mockServer = MockServer()
+    m.mockServer.create("127.0.0.1", 54321)
 end sub
 
 sub HttpRequestTestSuite__TearDown()
-    m.mockServer.close()
+    m.mockServer.destroy()
     m.mockServer = invalid
     m.testObject = invalid
     m.delete("mockServer")
@@ -94,7 +91,7 @@ function TestCase__HttpRequest_Send()
     m.testObject.open("http://127.0.0.1:54321/", "GET")
     m.testObject.send()
     m.testObject.abort()
-    request = m.HandleMockServerEvent(m.mockServer)
+    request = m.mockServer.handleEvent()
     return m.assertNotEmpty(request)
 end function
 
@@ -104,7 +101,7 @@ function TestCase__HttpRequest_SendData()
     m.testObject.open("http://127.0.0.1:54321/", "POST")
     m.testObject.send({password: "12345", user: "johndoe"})
     m.testObject.abort()
-    request = m.HandleMockServerEvent(m.mockServer)
+    request = m.mockServer.handleEvent()
     result = m.assertNotEmpty(request)
     result += m.assertEqual(request.data, formatJson({password: "12345", user: "johndoe"}))
     return result

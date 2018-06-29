@@ -14,10 +14,6 @@ function TestSuite__GoogleAnalytics() as Object
     this.SetUp = GoogleAnalyticsTestSuite__SetUp
     this.TearDown = GoogleAnalyticsTestSuite__TearDown
 
-    ' Helper functions
-    this.CreateMockServer = Helper__CreateMockServer
-    this.HandleMockServerEvent = Helper__HandleMockServerEvent
-
     ' Add tests to suite's tests collection
     this.addTest("should create global object", TestCase__GoogleAnalytics_Global)
     this.addTest("should create object with expected functions", TestCase__GoogleAnalytics_Functions)
@@ -49,11 +45,12 @@ sub GoogleAnalyticsTestSuite__SetUp()
     m.testObject._endpoint = "http://127.0.0.1:54321"
     m.testObject._endpointBatch = "http://127.0.0.1:54321"
     ' Mock server that will receive requests
-    m.mockServer = m.CreateMockServer("127.0.0.1", 54321)
+    m.mockServer = MockServer()
+    m.mockServer.create("127.0.0.1", 54321)
 end sub
 
 sub GoogleAnalyticsTestSuite__TearDown()
-    m.mockServer.close()
+    m.mockServer.destroy()
     m.mockServer = invalid
     m.testObject = invalid
     m.delete("mockServer")
@@ -109,7 +106,7 @@ function TestCase__GoogleAnalytics_TrackEvent()
     m.testObject.init("D-UMMY-ID")
     m.testObject._sequence = 1
     m.testObject.trackEvent({ category: "app", action: "launch"})
-    request = m.HandleMockServerEvent(m.mockServer)
+    request = m.mockServer.handleEvent()
     return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&ea=launch&ec=app&t=event&v=1&z=1")
 end function
 
@@ -117,7 +114,7 @@ function TestCase__GoogleAnalytics_TrackScreen()
     m.testObject.init("D-UMMY-ID")
     m.testObject._sequence = 1
     m.testObject.trackScreen({name: "testScreen"})
-    request = m.HandleMockServerEvent(m.mockServer)
+    request = m.mockServer.handleEvent()
     return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cd=testScreen&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&t=screenview&v=1&z=1")
 end function
 
@@ -125,7 +122,7 @@ function TestCase__GoogleAnalytics_TrackTransaction()
     m.testObject.init("D-UMMY-ID")
     m.testObject._sequence = 1
     m.testObject.trackTransaction({ id: "OD564", revenue: "10.00"})
-    request = m.HandleMockServerEvent(m.mockServer)
+    request = m.mockServer.handleEvent()
     return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&t=transaction&ti=OD564&tr=10.00&v=1&z=1")
 end function
 
@@ -133,7 +130,7 @@ function TestCase__GoogleAnalytics_TrackItem()
     m.testObject.init("D-UMMY-ID")
     m.testObject._sequence = 1
     m.testObject.trackItem({ transactionId: "OD564", name: "Test01", price: "10.00", code: "TEST001", category: "vod"})
-    request = m.HandleMockServerEvent(m.mockServer)
+    request = m.mockServer.handleEvent()
     return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&ic=TEST001&in=Test01&ip=10.00&iv=vod&t=item&ti=OD564&v=1&z=1")
 end function
 
@@ -141,7 +138,7 @@ function TestCase__GoogleAnalytics_TrackTiming()
     m.testObject.init("D-UMMY-ID")
     m.testObject._sequence = 1
     m.testObject.trackTiming({category: "test", variable: "test", time: "1000"})
-    request = m.HandleMockServerEvent(m.mockServer)
+    request = m.mockServer.handleEvent()
     return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&t=timing&utc=test&utt=1000&utv=test&v=1&z=1")
 end function
 
@@ -149,7 +146,7 @@ function TestCase__GoogleAnalytics_TrackException()
     m.testObject.init("D-UMMY-ID")
     m.testObject._sequence = 1
     m.testObject.trackException({description: "description", isFatal: "1"})
-    request = m.HandleMockServerEvent(m.mockServer)
+    request = m.mockServer.handleEvent()
     return m.assertEqual(request.data, "tid=D-UMMY-ID&an=AppName&av=1.2.3&cid=ce451d12-e1c2-4f6c-b74a-9ed4aeb66584&ds=app&exd=description&exf=1&t=exception&v=1&z=1")
 end function
 
@@ -168,7 +165,7 @@ function TestCase__GoogleAnalytics_BatchRequest()
     m.testObject.init(["D-UMMY-ID", "D-UMMY-ID2"])
     m.testObject._sequence = 1
     m.testObject.trackEvent({ category: "app", action: "launch"})
-    request = m.HandleMockServerEvent(m.mockServer)
+    request = m.mockServer.handleEvent()
     dataArr = processBatchData(request.data)
     result = m.assertNotEmpty(dataArr)
     for i = 0 to dataArr.count() - 1
@@ -181,7 +178,7 @@ function TestCase__GoogleAnalytics_CleanupRequests()
     m.testObject.init("D-UMMY-ID")
     m.testObject._sequence = 1
     m.testObject.trackScreen({name: "testScreen"})
-    m.HandleMockServerEvent(m.mockServer)
+    request = m.mockServer.handleEvent()
     m.testObject._cleanupRequests()
     return m.assertEmpty(m.testObject._sentRequests)
 end function
