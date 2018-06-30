@@ -40,46 +40,36 @@ function TestCase__Math_Functions()
 end function
 
 function TestCase__Math_Ceil()
-    expectedValues = [1,2,-1]
-    values = []
-    values.push(m.testObject.ceil(1.0))
-    values.push(m.testObject.ceil(1.4))
-    values.push(m.testObject.ceil(-1.5))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.ceil(1.0), 1)
+    result += m.assertEqual(m.testObject.ceil(1.4), 2)
+    result += m.assertEqual(m.testObject.ceil(-1.5), -1)
+    return result
 end function
 
 function TestCase__Math_Floor()
-    expectedValues = [1,1,-2]
-    values = []
-    values.push(m.testObject.floor(1.0))
-    values.push(m.testObject.floor(1.4))
-    values.push(m.testObject.floor(-1.5))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.floor(1.0), 1)
+    result += m.assertEqual(m.testObject.floor(1.4), 1)
+    result += m.assertEqual(m.testObject.floor(-1.5), -2)
+    return result
 end function
 
 function TestCase__Math_Round()
-    expectedValues = [1,1.146,-1.15]
-    values = []
-    values.push(m.testObject.round(1.1459))
-    values.push(m.testObject.round(1.1459, 3))
-    values.push(m.testObject.round(-1.1459, 2))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.round(1.1459), 1)
+    result += m.assertEqual(m.testObject.round(1.1459, 3), 1.146)
+    result += m.assertEqual(m.testObject.round(-1.1459, 2), -1.15)
+    return result
 end function
 
 function TestCase__Math_Min()
-    expectedValues = [1,1.14,-2]
-    values = []
-    values.push(m.testObject.min(1,2))
-    values.push(m.testObject.min(1.14, 1.15))
-    values.push(m.testObject.min(-1.5, -2))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.min(1,2), 1)
+    result += m.assertEqual(m.testObject.min(1.14, 1.15), 1.14)
+    result += m.assertEqual(m.testObject.min(-1.5, -2), -2)
+    return result
 end function
 
 function TestCase__Math_Max()
-    expectedValues = [2,1.15,-1.5]
-    values = []
-    values.push(m.testObject.max(1,2))
-    values.push(m.testObject.max(1.14, 1.15))
-    values.push(m.testObject.max(-1.5, -2))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.max(1,2), 2)
+    result += m.assertEqual(m.testObject.max(1.14, 1.15), 1.15)
+    result += m.assertEqual(m.testObject.max(-1.5, -2), -1.5)
+    return result
 end function

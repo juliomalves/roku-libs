@@ -41,67 +41,53 @@ function TestCase__Array_Functions()
 end function
 
 function TestCase__Array_Contains()
-    expectedValues = [true,false,false]
     arr = [1,2,3,4,5]
-    values = []
-    values.push(m.testObject.contains(arr, 3))
-    values.push(m.testObject.contains(arr, 8))
-    values.push(m.testObject.contains(arr, 1.5))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertTrue(m.testObject.contains(arr, 3))
+    result += m.assertFalse(m.testObject.contains(arr, 8))
+    result += m.assertFalse(m.testObject.contains(arr, 1.5))
+    return result
 end function
 
 function TestCase__Array_IndexOf()
-    expectedValues = [2,-1,-1]
     arr = [1,2,3,4,5]
-    values = []
-    values.push(m.testObject.indexOf(arr, 3))
-    values.push(m.testObject.indexOf(arr, 8))
-    values.push(m.testObject.indexOf(arr, 1.5))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.indexOf(arr, 3), 2)
+    result += m.assertEqual(m.testObject.indexOf(arr, 8), -1)
+    result += m.assertEqual(m.testObject.indexOf(arr, 1.5), -1)
+    return result
 end function
 
 function TestCase__Array_LastIndexOf()
-    expectedValues = [3,-1,-1]
     arr = [1,2,3,3,5]
-    values = []
-    values.push(m.testObject.lastIndexOf(arr, 3))
-    values.push(m.testObject.lastIndexOf(arr, 8))
-    values.push(m.testObject.lastIndexOf(arr, 1.5))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.lastIndexOf(arr, 3), 3)
+    result += m.assertEqual(m.testObject.lastIndexOf(arr, 8), -1)
+    result += m.assertEqual(m.testObject.lastIndexOf(arr, 1.5), -1)
+    return result
 end function
 
 function TestCase__Array_Slice()
-    expectedValues = [[2,3,4],[1,2,3],[1,2,3,4,5],[]]
     arr = [1,2,3,4,5]
-    values = []
-    values.push(m.testObject.slice(arr, 1, 3))
-    values.push(m.testObject.slice(arr, -1, 2))
-    values.push(m.testObject.slice(arr, 0, 6))
-    values.push(m.testObject.slice(arr, 3, 2))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.slice(arr, 1, 3), [2,3,4])
+    result += m.assertEqual(m.testObject.slice(arr, -1, 2), [1,2,3])
+    result += m.assertEqual(m.testObject.slice(arr, 0, 6), [1,2,3,4,5])
+    result += m.assertEqual(m.testObject.slice(arr, 3, 2), [])
+    return result
 end function
 
 function TestCase__Array_Map()
-    expectedValues = [[2,3,4,5,6],[0,1,2,3,4],[]]
-    arr = [1,2,3,4,5]
-    values = []
     addOne = function(element, index, arr)
         return element + 1
     end function
     returnIndex = function(element, index, arr)
         return index
     end function
-    values.push(m.testObject.map(arr, addOne))
-    values.push(m.testObject.map(arr, returnIndex))
-    values.push(m.testObject.map([], addOne))
-    return m.assertEqual(values, expectedValues)
+    arr = [1,2,3,4,5]
+    result = m.assertEqual(m.testObject.map(arr, addOne), [2,3,4,5,6])
+    result += m.assertEqual(m.testObject.map(arr, returnIndex), [0,1,2,3,4])
+    result += m.assertEqual(m.testObject.map([], addOne), [])
+    return result
 end function
 
 function TestCase__Array_Reduce()
-    expectedValues = [15,[1,2,3,4,5],10]
-    arr1 = [1,2,3,4,5]
-    arr2 = [[1,2],[3,4],[5]]
-    values = []
     reduceToNum = function(acc, element, index, arr)
         return acc + element
     end function
@@ -109,8 +95,10 @@ function TestCase__Array_Reduce()
         acc.append(element)
         return acc
     end function
-    values.push(m.testObject.reduce(arr1, reduceToNum))
-    values.push(m.testObject.reduce(arr2, reduceToArr))
-    values.push(m.testObject.reduce([], reduceToNum, 10))
-    return m.assertEqual(values, expectedValues)
+    arr1 = [1,2,3,4,5]
+    arr2 = [[1,2],[3,4],[5]]
+    result = m.assertEqual(m.testObject.reduce(arr1, reduceToNum), 15)
+    result += m.assertEqual(m.testObject.reduce(arr2, reduceToArr), [1,2,3,4,5])
+    result += m.assertEqual(m.testObject.reduce([], reduceToNum, 10), 10)
+    return result
 end function

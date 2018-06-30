@@ -42,77 +42,58 @@ function TestCase__String_Functions()
 end function
 
 function TestCase__String_CharAt()
-    expectedValues = ["e","","H"]
     str = "Hello World!"
-    values = []
-    values.push(m.testObject.charAt(str, 1))
-    values.push(m.testObject.charAt(str, 12))
-    values.push(m.testObject.charAt(str, -1))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.charAt(str, 1), "e")
+    result += m.assertEqual(m.testObject.charAt(str, 12), "")
+    result += m.assertEqual(m.testObject.charAt(str, -1), "H")
+    return result
 end function
 
 function TestCase__String_Contains()
-    expectedValues = [true,false,false]
     str = "Hello World!"
-    values = []
-    values.push(m.testObject.contains(str, "Hell"))
-    values.push(m.testObject.contains(str, "Hell", 2))
-    values.push(m.testObject.contains(str, "Bye"))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.contains(str, "Hell"), true)
+    result += m.assertEqual(m.testObject.contains(str, "Hell", 2), false)
+    result += m.assertEqual(m.testObject.contains(str, "Bye"), false)
+    return result
 end function
 
 function TestCase__String_IndexOf()
-    expectedValues = [0,-1,-1]
     str = "Hello World!"
-    values = []
-    values.push(m.testObject.indexOf(str, "Hell"))
-    values.push(m.testObject.indexOf(str, "Hell", 2))
-    values.push(m.testObject.indexOf(str, "Bye"))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.indexOf(str, "Hell"), 0)
+    result += m.assertEqual(m.testObject.indexOf(str, "Hell", 2), -1)
+    result += m.assertEqual(m.testObject.indexOf(str, "Bye"), -1)
+    return result
 end function
 
 function TestCase__String_Match()
-    expectedValues = [[],["Cad"],["Abra","Ab","ra"]]
     str = "AbraCadabra"
-    values = []
-    values.push(m.testObject.match(str, "cad"))
-    values.push(m.testObject.match(str, "cad", "i"))
-    values.push(m.testObject.match(str, "(ab)(ra)", "i"))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.match(str, "cad"), [])
+    result += m.assertEqual(m.testObject.match(str, "cad", "i"), ["Cad"])
+    result += m.assertEqual(m.testObject.match(str, "(ab)(ra)", "i"), ["Abra","Ab","ra"])
+    return result
 end function
 
 function TestCase__String_Replace()
-    expectedValues = ["Bye World!","Hello World?","Hello World!"]
     str = "Hello World!"
-    values = []
-    values.push(m.testObject.replace(str, "Hello", "Bye"))
-    values.push(m.testObject.replace(str, "!", "?"))
-    values.push(m.testObject.replace(str, "Hi", "Bye"))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.replace(str, "Hello", "Bye"), "Bye World!")
+    result += m.assertEqual(m.testObject.replace(str, "!", "?"), "Hello World?")
+    result += m.assertEqual(m.testObject.replace(str, "Hi", "Bye"), "Hello World!")
+    return result
 end function
 
 function TestCase__String_Truncate()
-    expectedValues = ["Hello","Hello...","Hello World!"]
     str = "Hello World!"
-    values = []
-    values.push(m.testObject.truncate(str, 5))
-    values.push(m.testObject.truncate(str, 5, "..."))
-    values.push(m.testObject.truncate(str, 13, "..."))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.truncate(str, 5), "Hello")
+    result += m.assertEqual(m.testObject.truncate(str, 5, "..."), "Hello...")
+    result += m.assertEqual(m.testObject.truncate(str, 13, "..."), "Hello World!")
+    return result
 end function
 
 function TestCase__String_ToHash()
-    expectedValues = [
-        "ed076287532e86365e841e92bfc50d8c",
-        "2ef7bde608ce5404e97d5f042f95f89f1c232871",
-        "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
-        "861844d6704e8573fec34d967e20bcfef3d424cf48be04e6dc08f2bd58c729743371015ead891cc3cf1c9d34b49264b510751b1ff9e537937bc46b5d6ff4ecc8"
-    ]
     str = "Hello World!"
-    values = []
-    values.push(m.testObject.toMD5(str))
-    values.push(m.testObject.toSHA1(str))
-    values.push(m.testObject.toSHA256(str))
-    values.push(m.testObject.toSHA512(str))
-    return m.assertEqual(values, expectedValues)
+    result = m.assertEqual(m.testObject.toMD5(str), "ed076287532e86365e841e92bfc50d8c")
+    result += m.assertEqual(m.testObject.toSHA1(str), "2ef7bde608ce5404e97d5f042f95f89f1c232871")
+    result += m.assertEqual(m.testObject.toSHA256(str), "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069")
+    result += m.assertEqual(m.testObject.toSHA512(str), "861844d6704e8573fec34d967e20bcfef3d424cf48be04e6dc08f2bd58c729743371015ead891cc3cf1c9d34b49264b510751b1ff9e537937bc46b5d6ff4ecc8")
+    return result
 end function
