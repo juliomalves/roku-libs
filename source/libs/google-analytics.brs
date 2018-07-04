@@ -42,7 +42,7 @@ function GoogleAnalyticsLib() as Object
         m.analytics = {
             _baseParams: {
                 v: "1",
-                cid: di.getClientTrackingId(),
+                cid: di.getChannelClientId(),
                 an : ai.getTitle(),
                 av : ai.getVersion(),
                 ds : "app"
