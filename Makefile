@@ -56,7 +56,7 @@ remove:
 	@curl --user $(USER):$(USERPASS) --digest -s -S -F "mysubmit=Delete" -F "archive=" -F "passwd=" http://$(DEVICEIP)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//" | sed "s[</font>[[" ; \
 
 tests: install
-	@echo "    Running tests at $(DEVICEIP)"
+	@echo "    Running tests at $(DEVICEIP):8085"
 	@curl -d '' "http://${DEVICEIP}:8060/launch/dev?RunTests=true"
 
 package: DEVIDPASS ?= "$(shell read -p "    Developer ID password: " REPLY; echo $$REPLY)"

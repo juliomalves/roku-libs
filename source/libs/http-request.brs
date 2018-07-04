@@ -104,9 +104,7 @@ function HttpRequest() as Object
                 data = formatJson(data)
             end if
             
-            while retries > 0
-                if not m._deviceInfo.getLinkStatus() then return response
-                
+            while retries > 0 and m._deviceInfo.getLinkStatus()
                 if m._sendHttpRequest(data) then
                     event = m._http.getPort().waitMessage(timeout)
 
