@@ -51,7 +51,6 @@ function GoogleAnalyticsLib() as Object
             _endpoint: "https://www.google-analytics.com/collect"
             _endpointBatch: "https://www.google-analytics.com/batch"
             _enabled: false
-            _sequence: 1
             _port: createObject("roMessagePort")
             _sentRequests: {}
 
@@ -182,9 +181,12 @@ function GoogleAnalyticsLib() as Object
                         payload = payload + item.key + "=" + m._encodeUri(item.value) + "&"
                     end if
                 end for
-                payload = payload + "z=" + m._sequence.toStr()'rnd(500).toStr()
-                m._sequence++
+                payload = payload + "z=" + m._getCacheBuster()
                 return payload
+            end function
+
+            _getCacheBuster: function()
+                return createObject("roDateTime").asSeconds().toStr()
             end function
 
             _encodeUri: function(str as String) as String
