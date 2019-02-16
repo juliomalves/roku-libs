@@ -30,8 +30,8 @@ function HttpRequest() as Object
         _http: invalid
         _isAborted: false
 
-        _isUrlSecure: function(url as String) as Boolean
-            return left(url, 5) = "https"
+        _isProtocolSecure: function(url as String) as Boolean
+            return left(url, 6) = "https:"
         end function
 
         _createHttpRequest: function() as Object
@@ -43,8 +43,8 @@ function HttpRequest() as Object
             request.setHeaders(m._requestHeaders)
             if m._method <> invalid then request.setRequest(m._method)
             
-            'Checks if URL is secured, and adds appropriate parameters if needed
-            if m._isUrlSecure(m._url) then
+            'Checks if URL protocol is secured, and adds appropriate parameters if needed
+            if m._isProtocolSecure(m._url) then
                 request.setCertificatesFile("common:/certs/ca-bundle.crt")
                 request.addHeader("X-Roku-Reserved-Dev-Id", "")
                 request.initClientCertificates()
@@ -118,7 +118,7 @@ function HttpRequest() as Object
                     end if
 
                     m._http.asyncCancel()
-                    timeout = timeout * 2
+                    timeout *= 2
                     sleep(m._interval)
                 end if
 

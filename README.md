@@ -86,14 +86,14 @@ Below are some examples showing its different capabilities.
 #### Request with 2s timeout and 3 retries
 ```javascript
 request = HttpRequest()
-request.open("https://echo.getpostman.com/delay/5").setTimeout(2000).setRetries(3)
+request.open("https://postman-echo.com/delay/5").setTimeout(2000).setRetries(3)
 response = request.send()
 ```
 
 #### POST request with 'application/json' Content-Type
 ```javascript
 request = HttpRequest()
-request.open("https://echo.getpostman.com/post", "POST")
+request.open("https://postman-echo.com/post", "POST")
 request.setRequestHeaders({"Content-Type": "application/json"})
 response = request.send({user: "johndoe", password: "12345"})
 ```
@@ -101,7 +101,7 @@ response = request.send({user: "johndoe", password: "12345"})
 #### Abort on-going request
 ```javascript
 request = HttpRequest()
-request.open("https://echo.getpostman.com/delay/5")
+request.open("https://postman-echo.com/delay/5")
 request.send()
 request.abort()
 ```

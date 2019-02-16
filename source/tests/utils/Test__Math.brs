@@ -54,7 +54,7 @@ function TestCase__Math_Floor()
 end function
 
 function TestCase__Math_Round()
-    result = m.assertEqual(m.testObject.round(1.1459), 1)
+    result = m.assertEqual(m.testObject.round(1.1459), 1.0)
     result += m.assertEqual(m.testObject.round(1.1459, 3), 1.146)
     result += m.assertEqual(m.testObject.round(-1.1459, 2), -1.15)
     return result

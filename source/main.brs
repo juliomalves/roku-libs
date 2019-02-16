@@ -4,6 +4,13 @@ sub main(args as Dynamic)
 
     if args.RunTests <> invalid and type(TestRunner) = "Function" then
         runner = TestRunner()
+        runner.setFunctions([
+            TestSuite__GoogleAnalytics,
+            TestSuite__HttpRequest,
+            TestSuite__Array,
+            TestSuite__Math
+            TestSuite__String
+        ])
         runner.logger.PrintStatistic = customPrintStatistic
         runner.run()
     end if
