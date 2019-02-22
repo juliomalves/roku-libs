@@ -214,7 +214,7 @@ Feel free to submit any pull request or issue to contribute to this project. Sug
 
 ## Authors
 
-* **Julio Alves** - *Initial work* - [julio-alves](https://github.com/julio-alves)
+* **Julio Alves** - *Initial work* - [juliomalves](https://github.com/juliomalves)
 
 
 ## License
