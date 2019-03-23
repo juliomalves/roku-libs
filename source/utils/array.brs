@@ -5,12 +5,17 @@
 function ArrayUtil() as Object
 
     util = {
+
+        isArray: function(arr)
+            return type(arr) = "roArray"
+        end function
+
         contains: function(arr as Object, element as Dynamic) as Boolean
             return m.indexOf(arr, element) >= 0
         end function
 
         indexOf: function(arr as Object, element as Dynamic) as Integer
-            if not m._isArray(arr) then return -1
+            if not m.isArray(arr) then return -1
 
             size = arr.count()
 
@@ -24,7 +29,7 @@ function ArrayUtil() as Object
         end function
 
         lastIndexOf: function(arr as Object, element as Dynamic) as Integer
-            if not m._isArray(arr) then return -1
+            if not m.isArray(arr) then return -1
 
             size = arr.count()
 
@@ -37,18 +42,21 @@ function ArrayUtil() as Object
             return -1
         end function
 
-        slice: function(arr as Object, fromIndex as Integer, toIndex as Integer)
-            if not m._isArray(arr) then return invalid
+        slice: function(arr as Object, fromIndex as Integer, toIndex=invalid as Dynamic)
+            if not m.isArray(arr) then return invalid
 
             size = arr.count()
+            lastIndex = size - 1
             slicedArr = []
             
-            if fromIndex < 0 then fromIndex = 0
-            if toIndex >= size then toIndex = size - 1
+            if fromIndex < 0 then fromIndex = size + fromIndex
+            if toIndex = invalid then toIndex = lastIndex
+            if toIndex < 0 then toIndex = size + toIndex
+            if toIndex >= size then toIndex = lastIndex
 
             if fromIndex >= size OR fromIndex > toIndex then return slicedArr
 
-            for i=fromIndex to toIndex
+            for i = fromIndex to toIndex
                 slicedArr.push(arr[i])
             end for
 
@@ -56,7 +64,7 @@ function ArrayUtil() as Object
         end function
 
         map: function(arr as Object, func as Function)
-            if not m._isArray(arr) then return invalid
+            if not m.isArray(arr) then return invalid
 
             size = arr.count()
             mappedArr = []
@@ -71,7 +79,7 @@ function ArrayUtil() as Object
         end function
 
         reduce: function(arr as Object, func as Function, initialValue=invalid as Dynamic)
-            if not m._isArray(arr) then return invalid
+            if not m.isArray(arr) then return invalid
 
             size = arr.count()
             startAt = 0
@@ -91,9 +99,23 @@ function ArrayUtil() as Object
             return accumulator
         end function
 
-        _isArray: function(arr)
-            return type(arr) = "roArray"
+        filter: function(arr as Object, func as Function)
+            if not m.isArray(arr) then return invalid
+
+            size = arr.count()
+            mappedArr = []
+
+            if size = 0 then return mappedArr
+
+            for i = 0 to size - 1
+                if func(arr[i], i, arr) then
+                    mappedArr.push(arr[i])
+                end if
+            end for
+
+            return mappedArr
         end function
+
     }
 
     return util

@@ -15,12 +15,14 @@ function TestSuite__Array() as Object
 
     ' Add tests to suite's tests collection
     this.addTest("should create object with expected functions", TestCase__Array_Functions)
+    this.addTest("isArray should check if element is an array", TestCase__Array_IsArray)
     this.addTest("contains should check whether or not the array contains given value", TestCase__Array_Contains)
     this.addTest("indexOf should return first index of element equal to given value", TestCase__Array_IndexOf)
     this.addTest("lastIndexOf should return last index of element equal to given value", TestCase__Array_LastIndexOf)
     this.addTest("slice should extract a section of the array", TestCase__Array_Slice)
     this.addTest("map should create an array with the results of calling the function on every element of the array", TestCase__Array_Map)
     this.addTest("reduce should reduce array to a single accumulator value", TestCase__Array_Reduce)
+    this.addTest("filter should filter array with elements that pass the function test", TestCase__Array_Filter)
 
     return this
 end function
@@ -36,8 +38,18 @@ end sub
 
 
 function TestCase__Array_Functions()
-    expectedFunctions = ["contains", "indexOf", "lastIndexOf", "slice", "map", "reduce"]
+    expectedFunctions = ["isArray", "contains", "indexOf", "lastIndexOf", "slice", "map", "reduce", "filter"]
     return m.assertAAHasKeys(m.testObject, expectedFunctions)
+end function
+
+function TestCase__Array_IsArray()
+    result = m.assertTrue(m.testObject.isArray([1,2,3,4,5]))
+    result += m.assertTrue(m.testObject.isArray([]))
+    result += m.assertFalse(m.testObject.isArray(true))
+    result += m.assertFalse(m.testObject.isArray(1.5))
+    result += m.assertFalse(m.testObject.isArray({}))
+    result += m.assertFalse(m.testObject.isArray(invalid))
+    return result
 end function
 
 function TestCase__Array_Contains()
@@ -67,7 +79,8 @@ end function
 function TestCase__Array_Slice()
     arr = [1,2,3,4,5]
     result = m.assertEqual(m.testObject.slice(arr, 1, 3), [2,3,4])
-    result += m.assertEqual(m.testObject.slice(arr, -1, 2), [1,2,3])
+    result += m.assertEqual(m.testObject.slice(arr, -2), [4,5])
+    result += m.assertEqual(m.testObject.slice(arr, -4, -2), [2,3,4])
     result += m.assertEqual(m.testObject.slice(arr, 0, 6), [1,2,3,4,5])
     result += m.assertEqual(m.testObject.slice(arr, 3, 2), [])
     return result
@@ -100,5 +113,19 @@ function TestCase__Array_Reduce()
     result = m.assertEqual(m.testObject.reduce(arr1, reduceToNum), 15)
     result += m.assertEqual(m.testObject.reduce(arr2, reduceToArr), [1,2,3,4,5])
     result += m.assertEqual(m.testObject.reduce([], reduceToNum, 10), 10)
+    return result
+end function
+
+function TestCase__Array_Filter()
+    moreThanSixLetters = function(element, index, arr)
+        return element.len() >= 6
+    end function
+    startsWithL = function(element, index, arr)
+        return element.left(1) = "l"
+    end function
+    arr = ["light", "limit", "exuberant", "destruction"]
+    result = m.assertEqual(m.testObject.filter(arr, moreThanSixLetters), ["exuberant", "destruction"])
+    result += m.assertEqual(m.testObject.filter(arr, startsWithL), ["light", "limit"])
+    result += m.assertEqual(m.testObject.filter([], moreThanSixLetters), [])
     return result
 end function
