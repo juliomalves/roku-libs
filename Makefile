@@ -1,5 +1,5 @@
 APPNAME = roku-libs
-VERSION ?= 0.8.0
+VERSION ?= 0.9.0
 DEVICEIP ?= 192.168.1.2
 USER ?= rokudev
 USERPASS ?= password
