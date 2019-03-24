@@ -5,8 +5,25 @@
 function MathUtil() as Object
 
     math = {
+
         E: 2.71828
         PI: 3.14159
+
+        isNumber: function(number) as Boolean
+            return m.isInt(number) or m.isFloat(number) or m.isDouble(number)
+        end function
+
+        isInt: function(number) as Boolean
+            return getInterface(number, "ifInt") <> invalid
+        end function
+
+        isFloat: function(number) as Boolean
+            return getInterface(number, "ifFloat") <> invalid
+        end function
+
+        isDouble: function(number) as Boolean
+            return getInterface(number, "ifDouble") <> invalid
+        end function
 
         ceil: function(number as Float) as Integer
             i = int(number)
@@ -38,9 +55,22 @@ function MathUtil() as Object
             end if
         end function
 
-        _isNumber: function(number)
-            return getInterface(number, "ifInt") <> invalid or getInterface(number, "ifFloat") <> invalid or getInterface(number, "ifDouble") <> invalid
+        ' Only works for non-fractional exponents
+        power: function(base, exp as Integer)
+            if exp = 0 then return 1
+            pow = m.power(base, fix(abs(exp/2)))
+            if exp mod 2 = 0 then
+                pow = pow * pow
+            else
+                pow = base * pow * pow
+            end if
+            if sgn(exp) < 0 then
+                return 1 / pow
+            else
+                return pow
+            end if
         end function
+
     }
 
     return math

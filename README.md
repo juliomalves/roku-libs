@@ -179,18 +179,20 @@ strUtil.toMD5(str)                  // "3aa51d002ab23a353b13df9ba059b4fc"
 
 ### [Math Utilities](./source/utils/string.brs)
 
-This utility provides additional mathematical constants and functions for BrightScript. It implements the following functions: `ceil`, `floor`, `round`, `min`, `max`.
+This utility provides additional mathematical constants and functions for BrightScript. It implements the following functions: `isNumber`, `isInt`, `isFloat`, `isDouble`, `ceil`, `floor`, `round`, `min`, `max`, `power`.
 
 Example usages:
 ```javascript
 math = MathUtil()
 
+math.isNumber(1.4)    // true
 math.ceil(1.4)        // 2
 math.floor(1.4)       // 1
 math.round(1.4)       // 1
 math.round(1.4159, 3) // 1.416
 math.min(0, 3)        // 0
 math.max(0, 3)        // 3
+math.power(2, 8)      // 256
 math.E                // 2.71828
 math.PI               // 3.14159
 ```
