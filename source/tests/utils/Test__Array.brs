@@ -39,7 +39,9 @@ end sub
 
 function TestCase__Array_Functions()
     expectedFunctions = ["isArray", "contains", "indexOf", "lastIndexOf", "slice", "map", "reduce", "filter"]
-    return m.assertAAHasKeys(m.testObject, expectedFunctions)
+    result = m.assertAAHasKeys(m.testObject, expectedFunctions)
+    result += m.assertEqual(m.testObject.keys().count(), expectedFunctions.count())
+    return result
 end function
 
 function TestCase__Array_IsArray()

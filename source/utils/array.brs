@@ -6,7 +6,7 @@ function ArrayUtil() as Object
 
     util = {
 
-        isArray: function(arr)
+        isArray: function(arr) as Boolean
             return type(arr) = "roArray"
         end function
 

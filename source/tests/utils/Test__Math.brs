@@ -40,8 +40,10 @@ end sub
 
 
 function TestCase__Math_Functions()
-    expectedFunctions = ["isNumber", "isInt", "isFloat", "isDouble", "ceil", "floor", "round", "min", "max", "power"]
-    return m.assertAAHasKeys(m.testObject, expectedFunctions)
+    expectedFunctions = ["E", "PI", "isNumber", "isInt", "isFloat", "isDouble", "ceil", "floor", "round", "min", "max", "power"]
+    result = m.assertAAHasKeys(m.testObject, expectedFunctions)
+    result += m.assertEqual(m.testObject.keys().count(), expectedFunctions.count())
+    return result
 end function
 
 function TestCase__Math_IsNumber()

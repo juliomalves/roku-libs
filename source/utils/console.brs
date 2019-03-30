@@ -86,12 +86,8 @@ function ConsoleUtil(var = invalid) as Object
             print m._getTimestamp(); m._getGroupIndent(); m._getLabelFromLogLevel(logLevel); output
         end function
 
-        _getGroupIndent: function()
-            ident = ""
-            for i = 0 to m._groupLevel-1
-                ident = ident + "    "
-            end for
-            return ident
+        _getGroupIndent: function() as String
+            return string(m._groupLevel, "    ")
         end function
 
         _getLabelFromLogLevel: function(logLevel as Integer) as String
