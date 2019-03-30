@@ -5,15 +5,20 @@
 function StringUtil() as Object
 
     util = {
-        charAt: function(str as String, index=0 as Integer)
+
+        isString: function(value) as Boolean
+            return type(value) = "String" or type(value) = "roString"
+        end function
+
+        charAt: function(str as String, index=0 as Integer) as String
             return str.mid(index, 1)
         end function
 
-        contains: function(str as String, substr as String, position=0 as Integer)
+        contains: function(str as String, substr as String, position=0 as Integer) as Boolean
             return m.indexOf(str, substr, position) >= 0
         end function
 
-        indexOf: function(str as String, substr as String, position=0 as Integer)
+        indexOf: function(str as String, substr as String, position=0 as Integer) as Integer
             return str.instr(position, substr)
         end function
 
@@ -33,6 +38,27 @@ function StringUtil() as Object
                 truncated = truncated.left(length) + ellipsis
             end if
             return truncated
+        end function
+
+        concat: function(str as String, value) as String
+            return str + m.toString(value)
+        end function
+
+        toString: function(value) as String
+            if type(value) = "<uninitialized>" then
+                value = "<uninitialized>"
+            else if type(value) = "roAssociativeArray" then
+                value = "<Component: roAssociativeArray>"
+            else if type(value) = "roList" or type(value) = "roArray" then
+                items = ""
+                for each item in value
+                    items = m.concat(items, item) + ","
+                end for
+                value = items.left(items.len()-1)
+            else if type(value) = "roDateTime" then
+                value = value.asSeconds()
+            end if
+            return box(value).toStr()
         end function
 
         toMD5: function(str as String) as String
@@ -58,10 +84,7 @@ function StringUtil() as Object
             digest.setup(algorithm)
             return digest.process(ba)
         end function
-
-        _isString: function(arr)
-            return type(arr) = "String" or type(arr) = "roString"
-        end function
+        
     }
 
     return util

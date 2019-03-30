@@ -161,19 +161,22 @@ arrUtil.filter(arr, filterFunc) // [5,3]
 
 ### [String Utilities](./source/utils/string.brs)
 
-This utility expands the string functionalities provides by the built-in `String`/`roString` types. It implements the following functions: `charAt`, `contains`, `indexOf`, `match`, `replace`, `truncate`, `toMD5`, `toSHA1`, `toSHA256`, `toSHA512`.
+This utility expands the string functionalities provides by the built-in `String`/`roString` types. It implements the following functions: `isString`, `charAt`, `contains`, `indexOf`, `match`, `replace`, `truncate`, `concat`, `toString`, `toMD5`, `toSHA1`, `toSHA256`, `toSHA512`.
 
 Example usages:
 ```javascript
 strUtil = StringUtil()
 str = "AbraCadabra"
 
+strUtil.isString(str)               // true
 strUtil.charAt(str, 1)              // "b"
 strUtil.contains(str, "bra")        // true
 strUtil.indexOf(str, "ra")          // 2
 strUtil.match(str, "(ab)(ra)", "i") // ["Abra","Ab","ra"]
 strUtil.replace(str, "Cad", "-")    // "Abra-abra"
 strUtil.truncate(str, 4, "...")     // "Abra..."
+strUtil.concat(str, " Cadabra")     // "AbraCadabra Cadabra"
+strUtil.toString(["1", 2, true])    // "1,2,true"
 strUtil.toMD5(str)                  // "3aa51d002ab23a353b13df9ba059b4fc"
 ```
 
