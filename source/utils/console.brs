@@ -2,7 +2,7 @@
 '   console.brs
 '
 '
-function ConsoleUtil(var = invalid) as Object
+function ConsoleUtil() as Object
 
     console = {
 
