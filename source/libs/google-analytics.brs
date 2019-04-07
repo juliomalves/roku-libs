@@ -178,7 +178,7 @@ function GoogleAnalyticsLib() as Object
                 payload = ""
                 for each item in params.items()
                     if item.value <> invalid then
-                        payload = payload + item.key + "=" + m._encodeUri(item.value) + "&"
+                        payload = payload + item.key + "=" + item.value.encodeUri() + "&"
                     end if
                 end for
                 payload = payload + "z=" + m._getCacheBuster()
@@ -189,21 +189,17 @@ function GoogleAnalyticsLib() as Object
                 return createObject("roDateTime").asSeconds().toStr()
             end function
 
-            _encodeUri: function(str as String) as String
-                return createObject("roUrlTransfer").escape(str)
-            end function
-
             _createPostData: function(payload as String) as Object
                 body = ""
                 if getInterface(m._trackingId, "ifString") = invalid then
                     endpoint = m._endpointBatch
                     for each id in m._trackingId
-                        body += "tid=" + m._encodeUri(id) + "&" + payload + chr(10)
+                        body += "tid=" + id.encodeUri() + "&" + payload + chr(10)
                     end for
                     body = body.left(body.len()-1)
                 else
                     endpoint = m._endpoint
-                    body = "tid=" + m._encodeUri(m._trackingId) + "&" + payload
+                    body = "tid=" + m._trackingId.encodeUri() + "&" + payload
                 end if
                 return { endpoint: endpoint, body: body }
             end function
