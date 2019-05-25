@@ -106,6 +106,17 @@ request.send()
 request.abort()
 ```
 
+#### Request with params passed in constructor (alternate syntax)
+```javascript
+request = HttpRequest({
+    url: "https://postman-echo.com/post",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: { user: "johndoe", password: "12345" }
+})
+response = request.send()
+```
+
 ### [Console Utilities](./source/utils/console.brs)
 
 This is a small logging utility that enhances the built-in `print` debugging capabilities, with a syntax similiar to JavaScript's `console` object. It adds a timestamp to every log, provides group indentation, timers and different logging levels (`info`, `assert` and `error`).
@@ -176,7 +187,7 @@ strUtil.match(str, "(ab)(ra)", "i") // ["Abra","Ab","ra"]
 strUtil.replace(str, "Cad", "-")    // "Abra-abra"
 strUtil.truncate(str, 4, "...")     // "Abra..."
 strUtil.concat(str, " Cadabra")     // "AbraCadabra Cadabra"
-strUtil.toString(["1", 2, true])    // "1,2,true"
+strUtil.toString(["1", 2, true])    // "[1,2,true]"
 strUtil.toMD5(str)                  // "3aa51d002ab23a353b13df9ba059b4fc"
 ```
 
