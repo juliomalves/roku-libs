@@ -178,7 +178,7 @@ function GoogleAnalyticsLib() as Object
                 payload = ""
                 for each item in params.items()
                     if item.value <> invalid then
-                        payload = payload + item.key + "=" + item.value.encodeUri() + "&"
+                        payload = payload + item.key + "=" + item.value.encodeUriComponent() + "&"
                     end if
                 end for
                 payload = payload + "z=" + m._getCacheBuster()
@@ -194,12 +194,12 @@ function GoogleAnalyticsLib() as Object
                 if getInterface(m._trackingId, "ifString") = invalid then
                     endpoint = m._endpointBatch
                     for each id in m._trackingId
-                        body += "tid=" + id.encodeUri() + "&" + payload + chr(10)
+                        body += "tid=" + id.encodeUriComponent() + "&" + payload + chr(10)
                     end for
                     body = body.left(body.len()-1)
                 else
                     endpoint = m._endpoint
-                    body = "tid=" + m._trackingId.encodeUri() + "&" + payload
+                    body = "tid=" + m._trackingId.encodeUriComponent() + "&" + payload
                 end if
                 return { endpoint: endpoint, body: body }
             end function
