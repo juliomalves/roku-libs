@@ -45,17 +45,24 @@ function StringUtil() as Object
         end function
 
         toString: function(value) as String
-            if type(value) = "<uninitialized>" then
+            valueType = type(value)
+            if valueType = "<uninitialized>" then
                 value = "<uninitialized>"
-            else if type(value) = "roAssociativeArray" then
-                value = "<Component: roAssociativeArray>"
-            else if type(value) = "roList" or type(value) = "roArray" then
+            else if valueType = "roSGNode" then
+                value = value.id
+            else if valueType = "roAssociativeArray" then
+                items = ""
+                for each key in value
+                    items += key.toStr() + ": " + m.toString(value[key]) + ", "
+                end for
+                value = "{ " + items.left(items.len()-2) + " }"
+            else if valueType = "roList" or valueType = "roArray" then
                 items = ""
                 for each item in value
-                    items = m.concat(items, item) + ","
+                    items = m.concat(items, item) + ", "
                 end for
-                value = items.left(items.len()-1)
-            else if type(value) = "roDateTime" then
+                value = "[" + items.left(items.len()-2) + "]"
+            else if valueType = "roDateTime" then
                 value = value.asSeconds()
             end if
             return box(value).toStr()
