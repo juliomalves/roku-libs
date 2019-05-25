@@ -23,7 +23,7 @@ function TestSuite__HttpRequest() as Object
     this.addTest("open should set correct properties", TestCase__HttpRequest_Open)
     this.addTest("can send a request", TestCase__HttpRequest_Send)
     this.addTest("can send a request with data", TestCase__HttpRequest_SendData)
-    ' this.addTest("should cleanup requests", TestCase__HttpRequest_CleanupRequests)
+    this.addTest("can send a request with passed parameters", TestCase__HttpRequest_SendParams)
 
     return this
 end function
@@ -100,6 +100,22 @@ function TestCase__HttpRequest_SendData()
     m.testObject.setTimeout(250).setRequestHeaders({"Content-Type": "application/json"})
     m.testObject.open("http://127.0.0.1:54321/", "POST")
     m.testObject.send({password: "12345", user: "johndoe"})
+    m.testObject.abort()
+    request = m.mockServer.handleEvent()
+    result = m.assertNotEmpty(request)
+    result += m.assertEqual(request.data, formatJson({password: "12345", user: "johndoe"}))
+    return result
+end function
+
+function TestCase__HttpRequest_SendParams()
+    m.testObject = HttpRequest({
+        url: "http://127.0.0.1:54321/",
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        data: {password: "12345", user: "johndoe"}
+    })
+    m.testObject.setTimeout(250)
+    m.testObject.send()
     m.testObject.abort()
     request = m.mockServer.handleEvent()
     result = m.assertNotEmpty(request)

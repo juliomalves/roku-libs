@@ -11,22 +11,37 @@
 '**  req.setTimeout(10000).setRetries(3)
 '**  req.send() 
 '**  
-'**  req = HttpRequest()
-'**  req.open("http://www.apiserver.com/login", "POST")
-'**  req.setRequestHeaders({"Content-Type": "application/json"})
-'**  req.send({user: "johndoe", password: "12345"})
-'**  req.abort()
+'**  req = HttpRequest({
+'**      url: "http://www.apiserver.com/login",
+'**      method: "POST",
+'**      headers: { "Content-Type": "application/json" },
+'**      data: { user: "johndoe", password: "12345" }
+'**  })
+'**  req.send()
 '********************************************************************
    
-function HttpRequest() as Object
+function HttpRequest(params=invalid as Dynamic) as Object
+    url = invalid
+    method = invalid
+    headers = {}
+    data = invalid
+
+    if params <> invalid then
+        if params.url <> invalid then url = params.url
+        if params.method <> invalid then method = params.method
+        if params.headers <> invalid then headers = params.headers
+        if params.data <> invalid then data = params.data
+    end if
+
     obj = {
         _timeout: 0
         _interval: 500
         _retries: 1
         _deviceInfo: createObject("roDeviceInfo")
-        _url: invalid
-        _method: invalid
-        _requestHeaders: {}
+        _url: url
+        _method: method
+        _requestHeaders: headers
+        _data: data
         _http: invalid
         _isAborted: false
 
@@ -100,12 +115,14 @@ function HttpRequest() as Object
             retries = m._retries
             response = invalid
 
-            if data <> invalid and getInterface(data, "ifString") = invalid then
-                data = formatJson(data)
+            if data <> invalid then m._data = data
+
+             if m._data <> invalid and getInterface(m._data, "ifString") = invalid then
+                m._data = formatJson(m._data)
             end if
             
             while retries > 0 and m._deviceInfo.getLinkStatus()
-                if m._sendHttpRequest(data) then
+                if m._sendHttpRequest(m._data) then
                     event = m._http.getPort().waitMessage(timeout)
 
                     if m._isAborted then 
