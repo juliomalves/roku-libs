@@ -55,7 +55,8 @@ function GoogleAnalyticsLib() as Object
             _sentRequests: {}
 
             init: function(trackingId as Dynamic)
-                m._trackingId = trackingId ' Either a string or an array of strings
+                if getInterface(trackingId, "ifArray") = invalid then trackingId = [trackingId]
+                m._trackingId = trackingId
                 m._enabled = true
             end function
 
@@ -157,17 +158,18 @@ function GoogleAnalyticsLib() as Object
             _send: function(payload as Object)
                 payload.append(m._baseParams)
                 encodedPayload = m._encodePayload(payload)
+                endpoint = m._getEndpoint()
                 data = m._createPostData(encodedPayload)
                 
                 req = createObject("roURLTransfer")
                 req.setMessagePort(m._port)
-                req.setUrl(data.endpoint)
+                req.setUrl(endpoint)
                 req.setRequest("POST")
                 req.setCertificatesFile("common:/certs/ca-bundle.crt")
                 req.initClientCertificates()
                 req.addHeader("X-Roku-Reserved-Dev-Id", "")
                 req.addHeader("Content-Type", "text/plain")
-                req.asyncPostFromString(data.body)
+                req.asyncPostFromString(data)
 
                 m._sentRequests[req.getIdentity().toStr()] = req
 
@@ -189,19 +191,18 @@ function GoogleAnalyticsLib() as Object
                 return createObject("roDateTime").asSeconds().toStr()
             end function
 
+            _getEndpoint: function() as String
+                endpoint = m._endpoint
+                if m._trackingId.count() > 1 then endpoint = m._endpointBatch
+                return endpoint
+            end function
+
             _createPostData: function(payload as String) as Object
-                body = ""
-                if getInterface(m._trackingId, "ifString") = invalid then
-                    endpoint = m._endpointBatch
-                    for each id in m._trackingId
-                        body += "tid=" + id.encodeUriComponent() + "&" + payload + chr(10)
-                    end for
-                    body = body.left(body.len()-1)
-                else
-                    endpoint = m._endpoint
-                    body = "tid=" + m._trackingId.encodeUriComponent() + "&" + payload
-                end if
-                return { endpoint: endpoint, body: body }
+                data = ""
+                for each id in m._trackingId
+                    data += "tid=" + id.encodeUriComponent() + "&" + payload + chr(10)
+                end for
+                return data.left(data.len() - 1)
             end function
 
             _cleanupRequests: function()

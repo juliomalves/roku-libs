@@ -78,7 +78,7 @@ end function
 
 function TestCase__GoogleAnalytics_Init()
     m.testObject.init("D-UMMY-ID")
-    result = m.assertEqual(m.testObject._trackingId, "D-UMMY-ID")
+    result = m.assertEqual(m.testObject._trackingId, ["D-UMMY-ID"])
     result += m.assertTrue(m.testObject._enabled)
     return result
 end function
