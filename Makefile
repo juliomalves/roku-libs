@@ -1,5 +1,5 @@
 APPNAME = roku-libs
-VERSION ?= 0.11.1
+VERSION ?= 0.11.2
 DEVICEIP ?= 192.168.1.2
 USER ?= rokudev
 USERPASS ?= password
@@ -17,7 +17,7 @@ zip:
 		rm  $(ZIPREL)/$(APPNAME).zip; \
 	fi
 
-# Create destination directory	
+# Create destination directory
 	@if [ ! -d $(ZIPREL) ]; \
 	then \
 		mkdir -p $(ZIPREL); \
@@ -30,7 +30,7 @@ zip:
 	fi
 
 # Zip .png files without compression do not zip Makefiles or any files ending with '~'
-	@echo "    Creating application zip: $(ZIPREL)/$(APPNAME).zip"	
+	@echo "    Creating application zip: $(ZIPREL)/$(APPNAME).zip"
 	@if [ -d $(SOURCEREL)/$(APPNAME) ]; \
 	then \
 		(zip -q -0 -r "$(ZIPREL)/$(APPNAME).zip" . -i \*.png $(ZIPEXCLUDE)); \
