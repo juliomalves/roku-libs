@@ -3,15 +3,15 @@
 Up-to-date libraries and utilities for BrightScript development. 
 
 This includes the following libraries:
-- [Google Analytics](./source/libs/google-analytics.brs)
-- [HTTP Request](./source/libs/http-request.brs)
+- [Google Analytics](#google-analytics)
+- [HTTP Request](#http-request)
 
 And several utilities that enhance built-in types/functions:
-- [Console](./source/utils/console.brs)
-- [Array](./source/utils/array.brs)
-- [String](./source/utils/string.brs)
-- [Math](./source/utils/math.brs)
-- [Registry](./source/utils/registry.brs)
+- [Console](#console-utilities)
+- [Array](#array-utilities)
+- [String](#string-utilities)
+- [Math](#math-utilities)
+- [Registry](#registry-utilities)
 
 
 ## Getting Started
