@@ -1,8 +1,8 @@
 APPNAME = roku-libs
 VERSION ?= 0.11.2
 DEVICEIP ?= 192.168.1.2
-USER ?= rokudev
-USERPASS ?= password
+ROKU ?= rokudev
+ROKUPASS ?= password
 ZIPEXCLUDE = -x \*.pkg -x keys\* -x LICENSE\* -x \*.md -x \*/.\* -x .\* -x build\* -x package\*
 PKGREL = ./package
 ZIPREL = ./build
@@ -45,7 +45,7 @@ install: zip
 	@sleep 1
 
 	@echo "    Installing $(APPNAME).zip to host $(DEVICEIP)"
-	@curl --user $(USER):$(USERPASS) --digest -s -S -F "mysubmit=Install" -F "archive=@$(ZIPREL)/$(APPNAME).zip" -F "passwd=" http://$(DEVICEIP)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//" | sed "s[</font>[[" ; \
+	@curl --user $(ROKU):$(ROKUPASS) --digest -s -S -F "mysubmit=Install" -F "archive=@$(ZIPREL)/$(APPNAME).zip" -F "passwd=" http://$(DEVICEIP)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//" | sed "s[</font>[[" ; \
 
 remove:
 # Close current app to avoid crashes
@@ -53,7 +53,7 @@ remove:
 	@sleep 1
 
 	@echo "    Removing $(APPNAME) from host $(DEVICEIP)"
-	@curl --user $(USER):$(USERPASS) --digest -s -S -F "mysubmit=Delete" -F "archive=" -F "passwd=" http://$(DEVICEIP)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//" | sed "s[</font>[[" ; \
+	@curl --user $(ROKU):$(ROKUPASS) --digest -s -S -F "mysubmit=Delete" -F "archive=" -F "passwd=" http://$(DEVICEIP)/plugin_install | grep "<font color" | sed "s/<font color=\"red\">//" | sed "s[</font>[[" ; \
 
 tests: install
 	@echo "    Running tests at $(DEVICEIP):8085"
@@ -75,7 +75,7 @@ package: install
 
 # Package application on remote device
 	@echo "    Packaging $(APPNAME) to host $(DEVICEIP)"
-	$(eval PKGFILE := $(shell curl --anyauth -u $(USER):$(USERPASS) -s -S -Fmysubmit=Package -Fapp_name=$(APPNAME)/$(VERSION) -Fpasswd=$(DEVIDPASS) -Fpkg_time=`date +%s` "http://$(DEVICEIP)/plugin_package" | grep 'pkgs' | sed 's/.*href=\"\([^\"]*\)\".*/\1/' | sed 's#pkgs//##'))
+	$(eval PKGFILE := $(shell curl --anyauth -u $(ROKU):$(ROKUPASS) -s -S -Fmysubmit=Package -Fapp_name=$(APPNAME)/$(VERSION) -Fpasswd=$(DEVIDPASS) -Fpkg_time=`date +%s` "http://$(DEVICEIP)/plugin_package" | grep 'pkgs' | sed 's/.*href=\"\([^\"]*\)\".*/\1/' | sed 's#pkgs//##'))
 	@if [ -z $(PKGFILE) ]; \
 	then \
 		echo "    Package creation failed! Check if your device has been rekeyed"; \
@@ -84,7 +84,7 @@ package: install
 
 # Dowload package from device
 	$(eval PKGFULLPATH := $(PKGREL)/$(APPNAME)-$(VERSION)_$(PKGFILE))
-	@curl --user $(USER):$(USERPASS) --digest -s -S -o $(PKGFULLPATH) http://$(DEVICEIP)/pkgs/$(PKGFILE)
+	@curl --user $(ROKU):$(ROKUPASS) --digest -s -S -o $(PKGFULLPATH) http://$(DEVICEIP)/pkgs/$(PKGFILE)
 	@if [ ! -f ""$(PKGFULLPATH)"" ]; \
 	then \
 		echo "    Package download failed! File does not exist: $(PKGFULLPATH)"; \
