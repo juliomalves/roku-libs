@@ -14,6 +14,14 @@ function StringUtil() as Object
             return str.mid(index, 1)
         end function
 
+        startsWith: function(str as String, substr as String) as Boolean
+            return str.left(substr.len()) = substr
+        end function
+
+        endsWith: function(str as String, substr as String) as Boolean
+            return str.right(substr.len()) = substr
+        end function
+
         contains: function(str as String, substr as String, position=0 as Integer) as Boolean
             return m.indexOf(str, substr, position) >= 0
         end function
@@ -23,7 +31,7 @@ function StringUtil() as Object
         end function
 
         match: function(str as String, regex as String, flag="" as String) as Object
-            regexObj = CreateObject("roRegex", regex, flag)
+            regexObj = createObject("roRegex", regex, flag)
             return regexObj.match(str)
         end function
 
@@ -38,6 +46,37 @@ function StringUtil() as Object
                 truncated = truncated.left(length) + ellipsis
             end if
             return truncated
+        end function
+
+        repeat: function(str as String, count as Integer) as String
+            return string(count, str)
+        end function
+
+        _padToLength: function(str as String, targetLength as Integer) as String
+            strLength = str.len()
+
+            if targetLength = 0 or strLength = 0 then return ""
+
+            repeatCount = int(targetLength / strLength) + 1
+            return m.repeat(str, repeatCount).left(targetLength)
+        end function
+
+        padStart: function(str as String, targetLength as Integer, padString=" " as String) as String
+            strLength = str.len()
+
+            if targetLength <= strLength then return str
+
+            padLength = targetLength - strLength
+            return m._padToLength(padString, padLength) + str
+        end function
+
+        padEnd: function(str as String, targetLength as Integer, padString=" " as String) as String
+            strLength = str.len()
+
+            if targetLength <= strLength then return str
+
+            padLength = targetLength - strLength
+            return str + m._padToLength(padString, padLength)
         end function
 
         concat: function(str as String, value) as String
@@ -91,7 +130,7 @@ function StringUtil() as Object
             digest.setup(algorithm)
             return digest.process(ba)
         end function
-        
+
     }
 
     return util

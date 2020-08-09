@@ -17,11 +17,16 @@ function TestSuite__String() as Object
     this.addTest("should create object with expected functions", TestCase__String_Functions)
     this.addTest("isString should check if element is a string", TestCase__String_IsString)
     this.addTest("charAt should return character at the specified index", TestCase__String_CharAt)
+    this.addTest("startsWith should check whether or not the string starts with given substring", TestCase__String_StartsWith)
+    this.addTest("endsWith should check whether or not the string ends with given substring", TestCase__String_EndsWith)
     this.addTest("contains should check whether or not the string contains given substring", TestCase__String_Contains)
     this.addTest("indexOf should return first index of given substring in the string", TestCase__String_IndexOf)
     this.addTest("match should retrieve matching substrings against a regular expression", TestCase__String_Match)
     this.addTest("replace should substitute matched substring with new substring", TestCase__String_Replace)
     this.addTest("truncate should truncate string to given length and append ellipsis", TestCase__String_Truncate)
+    this.addTest("repeat should repeat string a given number of times", TestCase__String_Repeat)
+    this.addTest("padStart should pad the string to the left with given pad string to given length", TestCase__String_PadStart)
+    this.addTest("padEnd should pad the string to the right with given pad string to given length", TestCase__String_PadEnd)
     this.addTest("concat should concatenate the second string argument to the first string", TestCase__String_Concat)
     this.addTest("toString should convert any value to a string representation", TestCase__String_ToString)
     this.addTest("hash functions should generate correct hashes", TestCase__String_ToHash)
@@ -40,7 +45,7 @@ end sub
 
 
 function TestCase__String_Functions()
-    expectedFunctions = ["isString", "charAt", "contains", "indexOf", "match", "replace", "truncate", "concat", "toString", "toMD5", "toSHA1", "toSHA256", "toSHA512", "_hash"]
+    expectedFunctions = ["isString", "charAt", "startsWith","endsWith", "contains", "indexOf", "match", "replace", "truncate", "repeat", "_padToLength", "padStart", "padEnd", "concat", "toString", "toMD5", "toSHA1", "toSHA256", "toSHA512", "_hash"]
     result = m.assertAAHasKeys(m.testObject, expectedFunctions)
     result += m.assertEqual(m.testObject.keys().count(), expectedFunctions.count())
     return result
@@ -61,6 +66,20 @@ function TestCase__String_CharAt()
     result = m.assertEqual(m.testObject.charAt(str, 1), "e")
     result += m.assertEqual(m.testObject.charAt(str, 12), "")
     result += m.assertEqual(m.testObject.charAt(str, -1), "H")
+    return result
+end function
+
+function TestCase__String_StartsWith()
+    str = "Hello World!"
+    result = m.assertEqual(m.testObject.startsWith(str, "Hell"), true)
+    result += m.assertEqual(m.testObject.startsWith(str, "World!"), false)
+    return result
+end function
+
+function TestCase__String_EndsWith()
+    str = "Hello World!"
+    result = m.assertEqual(m.testObject.endsWith(str, "Hell"), false)
+    result += m.assertEqual(m.testObject.endsWith(str, "World!"), true)
     return result
 end function
 
@@ -101,6 +120,34 @@ function TestCase__String_Truncate()
     result = m.assertEqual(m.testObject.truncate(str, 5), "Hello")
     result += m.assertEqual(m.testObject.truncate(str, 5, "..."), "Hello...")
     result += m.assertEqual(m.testObject.truncate(str, 13, "..."), "Hello World!")
+    return result
+end function
+
+function TestCase__String_Repeat()
+    str = "Hello"
+    result = m.assertEqual(m.testObject.repeat(str, 3), "HelloHelloHello")
+    result += m.assertEqual(m.testObject.repeat(str, 0), "")
+    result += m.assertEqual(m.testObject.repeat(str, 1), "Hello")
+    return result
+end function
+
+function TestCase__String_PadStart()
+    str = "123"
+    result = m.assertEqual(m.testObject.padStart(str, 6), "   123")
+    result = m.assertEqual(m.testObject.padStart(str, 1), "123")
+    result = m.assertEqual(m.testObject.padStart(str, 6, ""), "123")
+    result = m.assertEqual(m.testObject.padStart(str, 6, "0"), "000123")
+    result = m.assertEqual(m.testObject.padStart(str, 6, "12"), "121123")
+    return result
+end function
+
+function TestCase__String_PadEnd()
+    str = "123"
+    result = m.assertEqual(m.testObject.padEnd(str, 6), "123   ")
+    result = m.assertEqual(m.testObject.padEnd(str, 1), "123")
+    result = m.assertEqual(m.testObject.padEnd(str, 6, ""), "123")
+    result = m.assertEqual(m.testObject.padEnd(str, 6, "0"), "123000")
+    result = m.assertEqual(m.testObject.padEnd(str, 6, "12"), "123121")
     return result
 end function
 
