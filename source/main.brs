@@ -18,27 +18,30 @@ end sub
 
 ' Override built-in PrintStatistic function
 sub customPrintStatistic(statObj as Object)
-    ? "*************            Start testing               *************"
+    ? "*** Starting all test suites"
     ? ""
     for each testSuite in statObj.Suites
-        ? "   "; testSuite.Name; ": "
+        ? "   "; iif(testSuite.Fail > 0 or testSuite.Crash > 0, "[FAIL] ", "[PASS] "); testSuite.Name; " "
         for each testCase in testSuite.Tests
             if testCase.Result = "Fail" then
-                ? "   >> "; testCase.Result; " - "; testCase.Name
-                ? "         Error Message: "; testCase.Error.Message
+                ? "    ✕ "; testCase.Name
+                ? "         FAIL: "; testCase.Error.Message
             else if testCase.Result = "Skipped" then
-                ? "   -- "; testCase.Result; " - "; testCase.Name
-                ? "         Skip Message: "; testCase.message
+                ? "    - "; testCase.Name
+                ? "         SKIP: "; testCase.message
             else
-                ? "      "; testCase.Result; " - "; testCase.Name
+                ? "    ✓ "; testCase.Name
             end if
         end for
         ? ""
-        ? "      Test Suite Total ="; testSuite.Total; " ; Passed ="; testSuite.Correct; " ; Failed ="; testSuite.Fail; " ; Skipped ="; testSuite.skipped; " ; Crashes ="; testSuite.Crash; "; Time spent:"; testSuite.Time; "ms"
-        ? ""
     end for
+    ? "   Tests:"; iif(statObj.Fail > 0, " " + statObj.Fail.toStr() + " failed,", ""); statObj.Correct; " passed,"; iif(statObj.skipped > 0, " " + statObj.skipped.toStr() + " skipped,", ""); iif(statObj.Crash > 0, " " + statObj.Crash.toStr() + " crashed,", ""); statObj.Total; " total"
+    ? "   Time:"; statObj.Time; "ms"
     ? ""
-    ? "   Tests Total ="; statObj.Total; " ; Passed ="; statObj.Correct; " ; Failed ="; statObj.Fail; " ; Skipped ="; statObj.skipped; " ; Crashes ="; statObj.Crash; "; Time spent:"; statObj.Time; "ms"
-    ? ""
-    ? "*************             End testing                *************"
+    ? "*** Ran all test suites."
 end sub
+
+function iif(condition as Boolean, ifTrue, ifFalse) as Dynamic
+    if condition then return ifTrue
+    return ifFalse
+end function
