@@ -1,12 +1,10 @@
 # Roku Libs
 
-Up-to-date libraries and utilities for BrightScript development. 
+Libraries and utilities for BrightScript development.
 
-This includes the following libraries:
+This includes the following libraries and utilities:
 - [Google Analytics](#google-analytics)
 - [HTTP Request](#http-request)
-
-And several utilities that enhance built-in types/functions:
 - [Console](#console-utilities)
 - [Array](#array-utilities)
 - [String](#string-utilities)
@@ -16,20 +14,21 @@ And several utilities that enhance built-in types/functions:
 
 ## Getting Started
 
-The libraries and utilities are bundled into a sample project which sole purpose is to run unit tests built with the [Roku Unit Testing Framework](https://github.com/rokudev/unit-testing-framework).
+The libraries and utilities are bundled into a sample project which sole purpose is to run unit tests built with [Roku Unit Testing Framework](https://github.com/rokudev/unit-testing-framework).
 Any file can and should be used separately as they do not have dependencies with each other.
 
 ### Makefile
 
-The Makefile included provides a few simple rules to help with the app installation and testing, among other things. 
+The `Makefile` included provides a few simple rules to help with the app installation and testing.
 
 From a terminal, you can first start by exporting the following variables
 ```bash
 export DEVICEIP=<your_device_IP>
-export USER=<your_dev_mode_user>
-export USERPASS=<your_dev_mode_password>
+export ROKU=<your_dev_mode_user>
+export ROKUPASS=<your_dev_mode_password>
 ```
-To run the unit tests (output will be available on the [debug console](https://sdkdocs.roku.com/display/sdkdoc/Debugging+Your+Application#DebuggingYourApplication-Accessingthedebugconsole))
+
+To run the unit tests (output will be available on the [debug console](https://developer.roku.com/en-gb/docs/developer-program/debugging/debugging-channels.md))
 ```bash
 make tests
 ```
@@ -39,7 +38,7 @@ make tests
 
 ### [Google Analytics](./source/libs/google-analytics.brs)
 
-This library provides tracking capabilities by sending data reports to Google Analytics using the [Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/v1/reference). 
+This library provides tracking capabilities by sending data reports to Google Analytics using the [Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/v1/reference).
 Below are some example usages on how to use its different tracking functionalities.
 
 To retrieve the GA global singleton object
@@ -80,7 +79,7 @@ googleAnalytics.setParams({sr: "1280x800", ul: "en-gb"})
 
 ### [HTTP Request](./source/libs/http-request.brs)
 
-This is a library that makes HTTP requests easier to deal with, with a syntax akin to JavaScript's `XMLHttpRequest` object. It provides a way to set a timeout using `setTimeout()` and can also do automatic retries using `setRetries()`. All setters and `open()` return the object itself to allow them to be chained. 
+This is a library that makes HTTP requests easier to deal with, with a syntax akin to JavaScript's `XMLHttpRequest` object. It provides a way to set a timeout using `setTimeout()` and can also do automatic retries using `setRetries()`. All setters and `open()` return the object itself to allow them to be chained.
 Below are some examples showing its different capabilities.
 
 #### Request with 2s timeout and 3 retries
@@ -132,7 +131,7 @@ console.info("Hello World")          // [14:56:16:893]     [INFO] Hello World
 console.group()
 console.assert(true, "Hello World")  // [14:56:16:894]         [ASSERT] Hello World
 console.groupEnd()
-console.assert(false, "Hello World") // 
+console.assert(false, "Hello World") //
 console.error("Hello World")         // [14:56:16:895]     [ERROR] Hello World
 console.groupEnd()
 console.timeEnd("Hello World")       // [14:56:16:895] Hello World: 4ms
@@ -172,7 +171,7 @@ arrUtil.filter(arr, filterFunc) // [5,3]
 
 ### [String Utilities](./source/utils/string.brs)
 
-This utility expands the string functionalities provides by the built-in `String`/`roString` types. It implements the following functions: `isString`, `charAt`, `contains`, `indexOf`, `match`, `replace`, `truncate`, `concat`, `toString`, `toMD5`, `toSHA1`, `toSHA256`, `toSHA512`.
+This utility expands the string functionalities provided by the built-in `String`/`roString` types. It implements the following functions: `isString`, `charAt`, `startsWith`, `endsWith`, `contains`, `indexOf`, `match`, `replace`, `truncate`, `repeat`, `padStart`, `padEnd`, `concat`, `toString`, `toMD5`, `toSHA1`, `toSHA256`, `toSHA512`.
 
 Example usages:
 ```javascript
@@ -181,11 +180,16 @@ str = "AbraCadabra"
 
 strUtil.isString(str)               // true
 strUtil.charAt(str, 1)              // "b"
+strUtil.startsWith(str, "Abra")     // true
+strUtil.endsWith(str, "Cadabra")    // true
 strUtil.contains(str, "bra")        // true
 strUtil.indexOf(str, "ra")          // 2
 strUtil.match(str, "(ab)(ra)", "i") // ["Abra","Ab","ra"]
 strUtil.replace(str, "Cad", "-")    // "Abra-abra"
 strUtil.truncate(str, 4, "...")     // "Abra..."
+strUtil.repeat(str, 2)              // "AbraCadabraAbraCadabra"
+strUtil.padStart(str, 15)           // "    AbraCadabra"
+strUtil.padEnd(str, 15)             // "AbraCadabra    "
 strUtil.concat(str, " Cadabra")     // "AbraCadabra Cadabra"
 strUtil.toString(["1", 2, true])    // "[1,2,true]"
 strUtil.toMD5(str)                  // "3aa51d002ab23a353b13df9ba059b4fc"
@@ -236,8 +240,7 @@ Feel free to submit any pull request or issue to contribute to this project. Sug
 
 ## Authors
 
-* **Julio Alves** - *Initial work* - [juliomalves](https://github.com/juliomalves)
-
+* [juliomalves](https://github.com/juliomalves) - Initial work & maintainer
 
 ## License
 
