@@ -42,13 +42,13 @@ function ArrayUtil() as Object
             return -1
         end function
 
-        slice: function(arr as Object, fromIndex as Integer, toIndex=invalid as Dynamic)
+        slice: function(arr as Object, fromIndex=0 as Integer, toIndex=invalid as Dynamic)
             if not m.isArray(arr) then return invalid
 
             size = arr.count()
             lastIndex = size - 1
             slicedArr = []
-            
+
             if fromIndex < 0 then fromIndex = size + fromIndex
             if toIndex = invalid then toIndex = lastIndex
             if toIndex < 0 then toIndex = size + toIndex
@@ -61,6 +61,26 @@ function ArrayUtil() as Object
             end for
 
             return slicedArr
+        end function
+
+        ' Only flattens to depth 1
+        flat: function(arr as Object)
+            if not m.isArray(arr) then return invalid
+
+            size = arr.count()
+
+            if size = 0 then return arr
+
+            reduceFunc = function(acc, element, index, arr)
+                if type(element) = "roArray" then
+                    acc.append(element)
+                else
+                    acc.push(element)
+                end if
+                return acc
+            end function
+
+            return m.reduce(arr, reduceFunc, [])
         end function
 
         map: function(arr as Object, func as Function)
@@ -87,7 +107,7 @@ function ArrayUtil() as Object
 
             if size = 0 then return accumulator
 
-            if accumulator = invalid then 
+            if accumulator = invalid then
                 accumulator = arr[0]
                 startAt = 1
             end if
@@ -95,7 +115,7 @@ function ArrayUtil() as Object
             for i = startAt to size - 1
                 accumulator = func(accumulator, arr[i], i, arr)
             end for
-            
+
             return accumulator
         end function
 
@@ -114,6 +134,22 @@ function ArrayUtil() as Object
             end for
 
             return mappedArr
+        end function
+
+        find: function(arr as Object, func as Function)
+            if not m.isArray(arr) then return invalid
+
+            size = arr.count()
+
+            if size = 0 then return invalid
+
+            for i = 0 to size - 1
+                if func(arr[i], i, arr) then
+                    return arr[i]
+                end if
+            end for
+
+            return invalid
         end function
 
     }

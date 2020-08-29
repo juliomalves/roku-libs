@@ -20,9 +20,11 @@ function TestSuite__Array() as Object
     this.addTest("indexOf should return first index of element equal to given value", TestCase__Array_IndexOf)
     this.addTest("lastIndexOf should return last index of element equal to given value", TestCase__Array_LastIndexOf)
     this.addTest("slice should extract a section of the array", TestCase__Array_Slice)
+    this.addTest("flat should create an array with all sub-array elements concatenated into it", TestCase__Array_Flat)
     this.addTest("map should create an array with the results of calling the function on every element of the array", TestCase__Array_Map)
     this.addTest("reduce should reduce array to a single accumulator value", TestCase__Array_Reduce)
-    this.addTest("filter should filter array with elements that pass the function test", TestCase__Array_Filter)
+    this.addTest("filter should filter array with elements that satisfy the testing function", TestCase__Array_Filter)
+    this.addTest("find should return the value of the first element in the array that satisfies the testing function", TestCase__Array_Find)
 
     return this
 end function
@@ -38,7 +40,7 @@ end sub
 
 
 function TestCase__Array_Functions()
-    expectedFunctions = ["isArray", "contains", "indexOf", "lastIndexOf", "slice", "map", "reduce", "filter"]
+    expectedFunctions = ["isArray", "contains", "indexOf", "lastIndexOf", "slice", "flat", "map", "reduce", "filter", "find"]
     result = m.assertAAHasKeys(m.testObject, expectedFunctions)
     result += m.assertEqual(m.testObject.keys().count(), expectedFunctions.count())
     return result
@@ -88,6 +90,13 @@ function TestCase__Array_Slice()
     return result
 end function
 
+function TestCase__Array_Flat()
+    arr = [0, 1, 2, [3, 4]]
+    result = m.assertEqual(m.testObject.flat(arr), [0, 1, 2, 3, 4])
+    result += m.assertEqual(m.testObject.flat([]), [])
+    return result
+end function
+
 function TestCase__Array_Map()
     addOne = function(element, index, arr)
         return element + 1
@@ -129,5 +138,19 @@ function TestCase__Array_Filter()
     result = m.assertEqual(m.testObject.filter(arr, moreThanSixLetters), ["exuberant", "destruction"])
     result += m.assertEqual(m.testObject.filter(arr, startsWithL), ["light", "limit"])
     result += m.assertEqual(m.testObject.filter([], moreThanSixLetters), [])
+    return result
+end function
+
+function TestCase__Array_Find()
+    moreThanSixLetters = function(element, index, arr)
+        return element.len() >= 6
+    end function
+    startsWithL = function(element, index, arr)
+        return element.left(1) = "l"
+    end function
+    arr = ["light", "limit", "exuberant", "destruction"]
+    result = m.assertEqual(m.testObject.find(arr, moreThanSixLetters), "exuberant")
+    result += m.assertEqual(m.testObject.find(arr, startsWithL), "light")
+    result += m.assertEqual(m.testObject.find([], moreThanSixLetters), invalid)
     return result
 end function
