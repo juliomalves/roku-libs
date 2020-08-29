@@ -151,6 +151,7 @@ arrUtil.contains(arr, 2)     // true
 arrUtil.indexOf(arr, 2)      // 1
 arrUtil.lastIndexOf(arr, 2)  // 3
 arrUtil.slice(arr, 1, 3)     // [2,3,2]
+arrUtil.flat([0, 1, 2, [3, 4]]) // [0, 1, 2, 3, 4]
 
 // mapFunc = function(element, index, arr)
 //     return element + 1
@@ -167,6 +168,11 @@ arrUtil.reduce(arr, reduceFunc, 5) // 18
 //     return element > 2
 // end function
 arrUtil.filter(arr, filterFunc) // [5,3]
+
+// findFunc = function(element, index, arr)
+//     return element > 2
+// end function
+arrUtil.find(arr, findFunc) // 5
 ```
 
 ### [String Utilities](./source/utils/string.brs)
@@ -211,8 +217,8 @@ math.round(1.4159, 3) // 1.416
 math.min(0, 3)        // 0
 math.max(0, 3)        // 3
 math.power(2, 8)      // 256
-math.E                // 2.71828
-math.PI               // 3.14159
+math.E                // 2.718281828459
+math.PI               // 3.1415926535898
 ```
 
 ### [Registry Utilities](./source/utils/registry.brs)
