@@ -6,8 +6,9 @@ function MathUtil() as Object
 
     math = {
 
-        E: 2.71828
-        PI: 3.14159
+        E: 2.718281828459
+
+        PI: 3.1415926535898
 
         isNumber: function(number) as Boolean
             return m.isInt(number) or m.isFloat(number) or m.isDouble(number)
