@@ -3,7 +3,7 @@
 Libraries and utilities for BrightScript development.
 
 This includes the following libraries and utilities:
-- [Google Analytics](#google-analytics)
+- [Google Analytics](#google-analytics) (native support now exists through [Roku Analytics Component Library](https://developer.roku.com/en-gb/docs/developer-program/libraries/roku-analytics-component.md#google-analytics))
 - [HTTP Request](#http-request)
 - [Console](#console-utilities)
 - [Array](#array-utilities)
@@ -37,6 +37,8 @@ make tests
 ## Description
 
 ### [Google Analytics](./source/libs/google-analytics.brs)
+
+**Note: An [official library](https://developer.roku.com/en-gb/docs/developer-program/libraries/roku-analytics-component.md) now exists with support for Google Analytics, Omniture, Brightcove and Ooyala.**
 
 This library provides tracking capabilities by sending data reports to Google Analytics using the [Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/v1/reference).
 Below are some example usages on how to use its different tracking functionalities.
