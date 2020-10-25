@@ -7,6 +7,7 @@ function ConsoleUtil() as Object
     console = {
 
         _timers: {}
+        _counters: {}
         _groupLevel: 0
         _outputIdent: ""
 
@@ -24,6 +25,18 @@ function ConsoleUtil() as Object
 
         assert: function(condition as Boolean, msg)
             if condition then m._print(3, msg)
+        end function
+
+        count: function(label = "default" as String)
+            counter = m._counters[label]
+            if counter = invalid then counter = 0
+            m._counters[label] = counter + 1
+            m.log(label + ": " + m._counters[label].toStr())
+        end function
+
+        countReset: function(label = "default" as String)
+            m._counters[label] = 0
+            m.log(label + ": " + m._counters[label].toStr())
         end function
 
         time: function(eventName as String)
