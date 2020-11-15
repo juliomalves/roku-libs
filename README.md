@@ -120,7 +120,7 @@ response = request.send()
 
 ### [Console Utilities](./source/utils/console.brs)
 
-This is a small logging utility that enhances the built-in `print` debugging capabilities, with a syntax similiar to JavaScript's `console` object. It adds a timestamp to every log, provides group indentation, timers and different logging levels (`info`, `assert` and `error`).
+Small logging utility that enhances the built-in `print` debugging capabilities, with a syntax similiar to JavaScript's `console` object. It adds a timestamp to every log, provides group indentation, timers, counters, and different logging levels (`info`, `assert` and `error`).
 
 Example usages:
 ```javascript
@@ -129,12 +129,15 @@ console.log("Hello World")           // [14:56:16:891] Hello World
 console.time("Hello World")          // [14:56:16:891] Hello World: timer started
 console.group()
 console.log("Hello World")           // [14:56:16:892]     Hello World
+console.count()                      // [14:56:16:894]     default: 1
 console.info("Hello World")          // [14:56:16:893]     [INFO] Hello World
 console.group()
 console.assert(true, "Hello World")  // [14:56:16:894]         [ASSERT] Hello World
+console.count()                      // [14:56:16:894]         default: 2
 console.groupEnd()
-console.assert(false, "Hello World") //
+console.assert(false, "Hello World")
 console.error("Hello World")         // [14:56:16:895]     [ERROR] Hello World
+console.count()                      // [14:56:16:894]     default: 3
 console.groupEnd()
 console.timeEnd("Hello World")       // [14:56:16:895] Hello World: 4ms
 ```
