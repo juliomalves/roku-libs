@@ -8,8 +8,9 @@ sub main(args as Dynamic)
             TestSuite__GoogleAnalytics,
             TestSuite__HttpRequest,
             TestSuite__Array,
-            TestSuite__Math
-            TestSuite__String
+            TestSuite__Math,
+            TestSuite__String,
+            TestSuite__Cache
         ])
         runner.logger.PrintStatistic = customPrintStatistic
         runner.run()

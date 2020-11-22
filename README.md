@@ -5,6 +5,7 @@ Libraries and utilities for BrightScript development.
 This includes the following libraries and utilities:
 - [Google Analytics](#google-analytics) (native support now exists through [Roku Analytics Component Library](https://developer.roku.com/en-gb/docs/developer-program/libraries/roku-analytics-component.md#google-analytics))
 - [HTTP Request](#http-request)
+- [Cache](#cache)
 - [Console](#console-utilities)
 - [Array](#array-utilities)
 - [String](#string-utilities)
@@ -116,6 +117,36 @@ request = HttpRequest({
     data: { user: "johndoe", password: "12345" }
 })
 response = request.send()
+```
+
+### [Cache](./source/utils/cache.brs)
+
+The `Cache` utility creates a simple interface for caching data to [Roku's volatile storage](https://developer.roku.com/en-gb/docs/developer-program/getting-started/architecture/file-system.md). Uses `cachefs:` storage by default, but can be overwritten to `tmp:` storage.
+
+```
+CacheUtil(key [, options])
+```
+
+Accepts a `key` string and an optional `options` object as second parameter, which can have the following fields:
+
+- `algorithm`: `String` - hash algorithm for the key hashing, which will be used for the stored file name. **Defaults to `"sha1"`**.
+- `storage`: `String` - storage to be used by the cache. **Defaults to `"cachefs:/"`**.
+- `ttl`: `Integer` - time to live (in seconds) for the cache, after which the cache will expire. If set to `invalid` the cache will never expire. **Defaults to `5` seconds**.
+
+#### Use Case
+As a sample use case, `CacheUtil` can be used to cache the response of a given HTTP request. Assuming a request was made to `https://postman-echo.com/get` and `responseString` contains its response as a `string` value.
+
+The response can be stored in cache as follows:
+
+```javascript
+cache = CacheUtil("https://postman-echo.com/get")
+cache.put(responseString)
+```
+On a following request to the same URL the cached response could be retrieved before making a new request, given the TTL expiry hasn't been reached yet.
+
+```javascript
+cache = CacheUtil("https://postman-echo.com/get")
+cache.get() // Returns response string that was cached previously
 ```
 
 ### [Console Utilities](./source/utils/console.brs)
