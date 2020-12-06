@@ -146,7 +146,7 @@ On a following request to the same URL the cached response could be retrieved be
 
 ```javascript
 cache = CacheUtil("https://postman-echo.com/get")
-cache.get() // Returns response string that was cached previously
+cachedValue = cache.get() // Returns response string that was cached previously
 ```
 
 ### [Console Utilities](./source/utils/console.brs)
@@ -163,10 +163,10 @@ console.log("Hello World")           // [14:56:16:892]     Hello World
 console.count()                      // [14:56:16:894]     default: 1
 console.info("Hello World")          // [14:56:16:893]     [INFO] Hello World
 console.group()
-console.assert(true, "Hello World")  // [14:56:16:894]         [ASSERT] Hello World
+console.assert(false, "Hello World") // [14:56:16:894]         [ASSERT] Hello World
 console.count()                      // [14:56:16:894]         default: 2
 console.groupEnd()
-console.assert(false, "Hello World")
+console.assert(true, "Hello World")
 console.error("Hello World")         // [14:56:16:895]     [ERROR] Hello World
 console.count()                      // [14:56:16:894]     default: 3
 console.groupEnd()

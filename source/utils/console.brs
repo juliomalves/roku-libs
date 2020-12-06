@@ -24,7 +24,7 @@ function ConsoleUtil() as Object
         end function
 
         assert: function(condition as Boolean, msg)
-            if condition then m._print(3, msg)
+            if not condition then m._print(3, msg)
         end function
 
         count: function(label = "default" as String)
