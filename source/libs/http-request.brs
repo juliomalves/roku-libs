@@ -1,16 +1,7 @@
 '********************************************************************
 '**  http-request.brs
 '********************************************************************
-'**  Examples:
-'**  req = HttpRequest()
-'**  req.open("https://www.apiserver.com/content/0001").setTimeout(20000)
-'**  req.send()
-'**   
-'**  req = HttpRequest()
-'**  req.open("http://www.apiserver.com/content/0001", "DELETE")
-'**  req.setTimeout(10000).setRetries(3)
-'**  req.send() 
-'**  
+'**  Example:
 '**  req = HttpRequest({
 '**      url: "http://www.apiserver.com/login",
 '**      method: "POST",
@@ -19,24 +10,30 @@
 '**  })
 '**  req.send()
 '********************************************************************
-   
-function HttpRequest(params=invalid as Dynamic) as Object
+
+function HttpRequest(params = invalid as Dynamic) as Object
     url = invalid
     method = invalid
     headers = {}
     data = invalid
+    timeout = 0
+    retries = 1
+    interval = 500
 
     if params <> invalid then
         if params.url <> invalid then url = params.url
         if params.method <> invalid then method = params.method
         if params.headers <> invalid then headers = params.headers
         if params.data <> invalid then data = params.data
+        if params.timeout <> invalid then timeout = params.timeout
+        if params.retries <> invalid then retries = params.retries
+        if params.interval <> invalid then interval = params.interval
     end if
 
     obj = {
-        _timeout: 0
-        _interval: 500
-        _retries: 1
+        _timeout: timeout
+        _retries: retries
+        _interval: interval
         _deviceInfo: createObject("roDeviceInfo")
         _url: url
         _method: method
@@ -57,41 +54,21 @@ function HttpRequest(params=invalid as Dynamic) as Object
             request.enableCookies()
             request.setHeaders(m._requestHeaders)
             if m._method <> invalid then request.setRequest(m._method)
-            
+
             'Checks if URL protocol is secured, and adds appropriate parameters if needed
             if m._isProtocolSecure(m._url) then
                 request.setCertificatesFile("common:/certs/ca-bundle.crt")
                 request.addHeader("X-Roku-Reserved-Dev-Id", "")
                 request.initClientCertificates()
             end if
-            
+
             return request
-        end function
-
-        setTimeout: function(value as Integer)
-            m._timeout = value
-            return m
-        end function
-
-        setInterval: function(value as Integer)
-            m._interval = value
-            return m
-        end function
-
-        setRetries: function(value as Integer)
-            m._retries = value
-            return m
-        end function
-        
-        setRequestHeaders: function(headers as Object)
-            m._requestHeaders = headers
-            return m
         end function
 
         getPort: function()
             if m._http <> invalid then
                 return m._http.getPort()
-            else 
+            else
                 return invalid
             end if
         end function
@@ -99,18 +76,12 @@ function HttpRequest(params=invalid as Dynamic) as Object
         getCookies: function(domain as String, path as String) as Object
             if m._http <> invalid then
                 return m._http.getCookies(domain, path)
-            else 
+            else
                 return invalid
             end if
         end function
 
-        open: function(url as String, method=invalid as Dynamic)
-            m._url = url
-            m._method = method
-            return m
-        end function
-
-        send: function(data=invalid as Dynamic) as Dynamic
+        send: function(data = invalid as Dynamic) as Dynamic
             timeout = m._timeout
             retries = m._retries
             response = invalid
@@ -120,17 +91,17 @@ function HttpRequest(params=invalid as Dynamic) as Object
              if m._data <> invalid and getInterface(m._data, "ifString") = invalid then
                 m._data = formatJson(m._data)
             end if
-            
+
             while retries > 0 and m._deviceInfo.getLinkStatus()
                 if m._sendHttpRequest(m._data) then
                     event = m._http.getPort().waitMessage(timeout)
 
-                    if m._isAborted then 
+                    if m._isAborted then
                         m._isAborted = false
                         m._http.asyncCancel()
                         exit while
                     else if type(event) = "roUrlEvent" then
-                        response = event 
+                        response = event
                         exit while
                     end if
 
@@ -141,13 +112,13 @@ function HttpRequest(params=invalid as Dynamic) as Object
 
                 retries--
             end while
-            
+
             return response
         end function
 
-        _sendHttpRequest: function(data=invalid as Dynamic) as Dynamic
+        _sendHttpRequest: function(data = invalid as Dynamic) as Dynamic
             m._http = m._createHttpRequest()
-            
+
             if data <> invalid then
                 return m._http.asyncPostFromString(data)
             else
@@ -159,7 +130,7 @@ function HttpRequest(params=invalid as Dynamic) as Object
             m._isAborted = true
         end function
 
-    }    
+    }
 
     return obj
 end function
