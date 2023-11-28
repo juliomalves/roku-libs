@@ -98,6 +98,23 @@ function ArrayUtil() as Object
             return mappedArr
         end function
 
+        groupBy: function(arr as Object, key as string)
+            if not m.isArray(arr) then return invalid
+            reduceFunc = function(acc, element, index, arr)
+                cat = element.Lookup(key)
+                value = acc.Lookup(cat)
+                if m.isArray(value)
+                    value.Push(element)
+                else
+                    acc[cat] = []
+                    acc[cat].Push(element)
+                end if
+
+                return acc
+            end function
+            return m.reduce(arr, reduceFunc, {})
+        endfunction
+
         reduce: function(arr as Object, func as Function, initialValue=invalid as Dynamic)
             if not m.isArray(arr) then return invalid
 
