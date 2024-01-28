@@ -152,6 +152,36 @@ function ArrayUtil() as Object
             return invalid
         end function
 
+        groupBy: function(arr as Object, key as string)
+            if not m.isArray(arr) then return invalid
+
+            size = arr.count()
+            accumulator = {}
+
+            if size = 0 then return accumulator
+
+            for i = 0 to size - 1
+                element = arr[i]
+
+                if element = invalid then continue for
+
+                keyValue = element[key]
+
+                if keyValue = invalid then continue for
+
+                groupName = keyValue.toStr()
+                groupArray = accumulator[groupName]
+
+                if m.isArray(groupArray) then
+                    groupArray.push(element)
+                else
+                    accumulator[groupName] = []
+                    accumulator[groupName].push(element)
+                end if
+            end for
+
+            return accumulator
+        end function
     }
 
     return util
