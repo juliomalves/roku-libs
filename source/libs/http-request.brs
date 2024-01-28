@@ -14,7 +14,7 @@
 function HttpRequest(params = invalid as Dynamic) as Object
     url = invalid
     method = invalid
-    headers = {}
+    headers = invalid
     data = invalid
     timeout = 0
     retries = 1
@@ -52,7 +52,7 @@ function HttpRequest(params = invalid as Dynamic) as Object
             request.setUrl(m._url)
             request.retainBodyOnError(true)
             request.enableCookies()
-            request.setHeaders(m._requestHeaders)
+            if m._requestHeaders <> invalid then request.setHeaders(m._requestHeaders)
             if m._method <> invalid then request.setRequest(m._method)
 
             'Checks if URL protocol is secured, and adds appropriate parameters if needed
