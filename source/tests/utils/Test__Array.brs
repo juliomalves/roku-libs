@@ -165,12 +165,12 @@ function TestCase__Array_GroupBy()
     ]
     expectedResultByType = {
         vegetables: [{ name: "asparagus", type: "vegetables", quantity: 5 }],
-        fruit: [{ name: "bananas", type: "fruit", quantity: 0 }, { name: "cherries", type: "fruit", quantity: 5 }]
+        fruit: [{ name: "bananas", type: "fruit", quantity: 0 }, { name: "cherries", type: "fruit", quantity: 5 }],
         meat: [{ name: "goat", type: "meat", quantity: 23 }]
     }
     expectedResultByQuantity = {
         "0": [{ name: "bananas", type: "fruit", quantity: 0 }],
-        "5": [{ name: "asparagus", type: "vegetables", quantity: 5 }, { name: "cherries", type: "fruit", quantity: 5 }]
+        "5": [{ name: "asparagus", type: "vegetables", quantity: 5 }, { name: "cherries", type: "fruit", quantity: 5 }],
         "23": [{ name: "goat", type: "meat", quantity: 23 }]
     }
     result = m.assertEqual(m.testObject.groupBy(arr, "type"), expectedResultByType)
