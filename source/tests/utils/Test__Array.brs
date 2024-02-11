@@ -125,6 +125,8 @@ end function
 function TestCase__Array_Flat()
     arr = [0, 1, 2, [3, 4]]
     result = m.assertEqual(m.testObject.flat(arr), [0, 1, 2, 3, 4])
+    result += m.assertEqual(m.testObject.flat([0, [1, [2, [3, 4]]]]), [0, 1, [2, [3, 4]]])
+    result += m.assertEqual(m.testObject.flat([0, [1, [2, [3, 4]]]], 3), [0, 1, 2, 3, 4])
     result += m.assertEqual(m.testObject.flat([]), [])
     return result
 end function

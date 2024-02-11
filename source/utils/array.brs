@@ -42,7 +42,7 @@ function ArrayUtil() as Object
             return -1
         end function
 
-        slice: function(arr as Object, fromIndex=0 as Integer, toIndex=invalid as Dynamic)
+        slice: function(arr as Object, fromIndex = 0 as Integer, toIndex=invalid as Dynamic)
             if not m.isArray(arr) then return invalid
 
             size = arr.count()
@@ -88,24 +88,28 @@ function ArrayUtil() as Object
             return filledArr
         end function
 
-        ' Only flattens to depth 1
-        flat: function(arr as Object)
+        flat: function(arr as Object, depth = 1 as Integer)
             if not m.isArray(arr) then return invalid
 
             size = arr.count()
 
             if size = 0 then return arr
 
-            reduceFunc = function(acc, element, index, arr)
-                if type(element) = "roArray" then
-                    acc.append(element)
-                else
-                    acc.push(element)
-                end if
-                return acc
-            end function
+            flattenArr = []
 
-            return m.reduce(arr, reduceFunc, [])
+            for each item in arr
+                if m.isArray(item) then
+                    if depth > 1 then
+                        flattenArr.append(m.flat(item, depth - 1))
+                    else
+                        flattenArr.append(item)
+                    end if
+                else
+                    flattenArr.push(item)
+                end if
+            end for
+
+            return flattenArr
         end function
 
         map: function(arr as Object, func as Function)
@@ -123,7 +127,7 @@ function ArrayUtil() as Object
             return mappedArr
         end function
 
-        reduce: function(arr as Object, func as Function, initialValue=invalid as Dynamic)
+        reduce: function(arr as Object, func as Function, initialValue = invalid as Dynamic)
             if not m.isArray(arr) then return invalid
 
             size = arr.count()
