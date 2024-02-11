@@ -27,6 +27,8 @@ function TestSuite__Array() as Object
     this.addTest("filter should filter array with elements that satisfy the testing function", TestCase__Array_Filter)
     this.addTest("find should return the value of the first element in the array that satisfies the testing function", TestCase__Array_Find)
     this.addTest("findIndex should return the index of the first element in the array that satisfies the testing function", TestCase__Array_FindIndex)
+    this.addTest("every should check whether all elements in the array satisfy the testing function", TestCase__Array_Every)
+    this.addTest("some should check whether at least one element in the array satisfies the testing function", TestCase__Array_Some)
     this.addTest("grouBy should return the array elements grouped by the given key", TestCase__Array_GroupBy)
 
     return this
@@ -56,6 +58,8 @@ function TestCase__Array_Functions()
         "filter",
         "find",
         "findIndex",
+        "every",
+        "some",
         "groupBy"
     ]
     result = m.assertAAHasKeys(m.testObject, expectedFunctions)
@@ -194,6 +198,34 @@ function TestCase__Array_FindIndex()
     result = m.assertEqual(m.testObject.findIndex(arr, moreThanSixLetters), 2)
     result += m.assertEqual(m.testObject.findIndex(arr, startsWithL), 0)
     result += m.assertEqual(m.testObject.findIndex([], moreThanSixLetters), -1)
+    return result
+end function
+
+function TestCase__Array_Every()
+    moreThanFiveLetters = function(element, index, arr)
+        return element.len() >= 5
+    end function
+    startsWithL = function(element, index, arr)
+        return element.left(1) = "l"
+    end function
+    arr = ["light", "limit", "exuberant", "destruction"]
+    result = m.assertEqual(m.testObject.every(arr, moreThanFiveLetters), true)
+    result += m.assertEqual(m.testObject.every(arr, startsWithL), false)
+    result += m.assertEqual(m.testObject.every([], moreThanFiveLetters), true)
+    return result
+end function
+
+function TestCase__Array_Some()
+    moreThanTenLetters = function(element, index, arr)
+        return element.len() >= 10
+    end function
+    startsWithA = function(element, index, arr)
+        return element.left(1) = "a"
+    end function
+    arr = ["light", "limit", "exuberant", "destruction"]
+    result = m.assertEqual(m.testObject.some(arr, moreThanTenLetters), true)
+    result += m.assertEqual(m.testObject.some(arr, startsWithA), false)
+    result += m.assertEqual(m.testObject.some([], moreThanTenLetters), false)
     return result
 end function
 

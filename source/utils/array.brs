@@ -193,6 +193,38 @@ function ArrayUtil() as Object
             return -1
         end function
 
+        every: function(arr as Object, func as Function) as Boolean
+            if not m.isArray(arr) then return true
+
+            size = arr.count()
+
+            if size = 0 then return true
+
+            for i = 0 to size - 1
+                if func(arr[i], i, arr) = false then
+                    return false
+                end if
+            end for
+
+            return true
+        end function
+
+        some: function(arr as Object, func as Function) as Boolean
+            if not m.isArray(arr) then return false
+
+            size = arr.count()
+
+            if size = 0 then return false
+
+            for i = 0 to size - 1
+                if func(arr[i], i, arr) then
+                    return true
+                end if
+            end for
+
+            return false
+        end function
+
         groupBy: function(arr as Object, key as string)
             if not m.isArray(arr) then return invalid
 

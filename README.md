@@ -201,7 +201,7 @@ console.timeEnd("Hello World"); // [14:56:16:895] Hello World: 4ms
 
 ### [Array Utilities](./source/utils/array.brs)
 
-This utility expands the array functionalities provided by the built-in `roArray` type. It implements the following functions: `isArray`, `contains`, `indexOf`, `lastIndexOf`, `slice`, `fill`, `flat`, `map`, `reduce`, `filter`, `find`, `findIndex`, `groupBy`.
+This utility expands the array functionalities provided by the built-in `roArray` type. It implements the following functions: `isArray`, `contains`, `indexOf`, `lastIndexOf`, `slice`, `fill`, `flat`, `map`, `reduce`, `filter`, `find`, `findIndex`, `every`, `some`, `groupBy`.
 
 Example usages:
 
@@ -233,11 +233,13 @@ arrUtil.reduce(arr, reduceFunc, 5); // 18
 // end function
 arrUtil.filter(arr, filterFunc); // [5,3]
 
-// findFunc = function(element, index, arr)
+// testFunc = function(element, index, arr)
 //     return element > 2
 // end function
-arrUtil.find(arr, findFunc); // 5
-arrUtil.findIndex(arr, findFunc); // 0
+arrUtil.find(arr, testFunc); // 5
+arrUtil.findIndex(arr, testFunc); // 0
+arrUtil.every(arr, testFunc); // false
+arrUtil.some(arr, testFunc); // true
 
 groupArr = [
     { name: "asparagus", type: "vegetables" },
