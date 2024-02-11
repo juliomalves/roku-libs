@@ -177,6 +177,22 @@ function ArrayUtil() as Object
             return invalid
         end function
 
+        findIndex: function(arr as Object, func as Function) as Integer
+            if not m.isArray(arr) then return -1
+
+            size = arr.count()
+
+            if size = 0 then return -1
+
+            for i = 0 to size - 1
+                if func(arr[i], i, arr) then
+                    return i
+                end if
+            end for
+
+            return -1
+        end function
+
         groupBy: function(arr as Object, key as string)
             if not m.isArray(arr) then return invalid
 

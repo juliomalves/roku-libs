@@ -26,6 +26,7 @@ function TestSuite__Array() as Object
     this.addTest("reduce should reduce array to a single accumulator value", TestCase__Array_Reduce)
     this.addTest("filter should filter array with elements that satisfy the testing function", TestCase__Array_Filter)
     this.addTest("find should return the value of the first element in the array that satisfies the testing function", TestCase__Array_Find)
+    this.addTest("findIndex should return the index of the first element in the array that satisfies the testing function", TestCase__Array_FindIndex)
     this.addTest("grouBy should return the array elements grouped by the given key", TestCase__Array_GroupBy)
 
     return this
@@ -42,7 +43,21 @@ end sub
 
 
 function TestCase__Array_Functions()
-    expectedFunctions = ["isArray", "contains", "indexOf", "lastIndexOf", "slice", "fill", "flat", "map", "reduce", "filter", "find", "groupBy"]
+    expectedFunctions = [
+        "isArray",
+        "contains",
+        "indexOf",
+        "lastIndexOf",
+        "slice",
+        "fill",
+        "flat",
+        "map",
+        "reduce",
+        "filter",
+        "find",
+        "findIndex",
+        "groupBy"
+    ]
     result = m.assertAAHasKeys(m.testObject, expectedFunctions)
     result += m.assertEqual(m.testObject.keys().count(), expectedFunctions.count())
     return result
@@ -165,6 +180,20 @@ function TestCase__Array_Find()
     result = m.assertEqual(m.testObject.find(arr, moreThanSixLetters), "exuberant")
     result += m.assertEqual(m.testObject.find(arr, startsWithL), "light")
     result += m.assertEqual(m.testObject.find([], moreThanSixLetters), invalid)
+    return result
+end function
+
+function TestCase__Array_FindIndex()
+    moreThanSixLetters = function(element, index, arr)
+        return element.len() >= 6
+    end function
+    startsWithL = function(element, index, arr)
+        return element.left(1) = "l"
+    end function
+    arr = ["light", "limit", "exuberant", "destruction"]
+    result = m.assertEqual(m.testObject.findIndex(arr, moreThanSixLetters), 2)
+    result += m.assertEqual(m.testObject.findIndex(arr, startsWithL), 0)
+    result += m.assertEqual(m.testObject.findIndex([], moreThanSixLetters), -1)
     return result
 end function
 
