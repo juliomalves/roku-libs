@@ -247,9 +247,9 @@ function TestCase__Array_GroupBy()
         "23": [{ name: "goat", type: "meat", quantity: 23 }]
     }
     result = m.assertEqual(m.testObject.groupBy(arr, "type"), expectedResultByType)
-    result = m.assertEqual(m.testObject.groupBy(arr, "quantity"), expectedResultByQuantity)
-    result = m.assertEqual(m.testObject.groupBy(arr, "key"), {})
-    result = m.assertEqual(m.testObject.groupBy("array", "type"), invalid)
-    result = m.assertEqual(m.testObject.groupBy([], "type"), {})
+    result =+ m.assertEqual(m.testObject.groupBy(arr, "quantity"), expectedResultByQuantity)
+    result =+ m.assertEqual(m.testObject.groupBy(arr, "key"), {})
+    result =+ m.assertEqual(m.testObject.groupBy("array", "type"), invalid)
+    result =+ m.assertEqual(m.testObject.groupBy([], "type"), {})
     return result
 end function
