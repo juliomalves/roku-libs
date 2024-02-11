@@ -90,7 +90,7 @@ function GoogleAnalyticsLib() as Object
                     t  : "screenview"
                     cd : screen.name
                 }
-                
+
                 return m._send(payload)
             end function
 
@@ -138,7 +138,7 @@ function GoogleAnalyticsLib() as Object
                     plt : timing.loadTime
                     srt : timing.responseTime
                 }
-                
+
                 return m._send(payload)
             end function
 
@@ -150,17 +150,16 @@ function GoogleAnalyticsLib() as Object
                     exd : exception.description
                     exf : exception.isFatal
                 }
-                
+
                 return m._send(payload)
             end function
-            
 
             _send: function(payload as Object)
                 payload.append(m._baseParams)
                 encodedPayload = m._encodePayload(payload)
                 endpoint = m._getEndpoint()
                 data = m._createPostData(encodedPayload)
-                
+
                 req = createObject("roURLTransfer")
                 req.setMessagePort(m._port)
                 req.setUrl(endpoint)

@@ -54,7 +54,7 @@ function ArrayUtil() as Object
             if toIndex < 0 then toIndex = size + toIndex
             if toIndex >= size then toIndex = lastIndex
 
-            if fromIndex >= size OR fromIndex > toIndex then return slicedArr
+            if fromIndex >= size or fromIndex > toIndex then return slicedArr
 
             for i = fromIndex to toIndex
                 slicedArr.push(arr[i])
@@ -225,7 +225,7 @@ function ArrayUtil() as Object
             return false
         end function
 
-        groupBy: function(arr as Object, key as string)
+        groupBy: function(arr as Object, key as String)
             if not m.isArray(arr) then return invalid
 
             size = arr.count()

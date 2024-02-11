@@ -5,7 +5,7 @@
 '    @TODO
 '
 
-function CacheUtil(key as string, options = invalid as Dynamic) as Object
+function CacheUtil(key as String, options = invalid as Dynamic) as Object
     algorithm = "sha1"
     storage = "cachefs:/"
     ttl = 5

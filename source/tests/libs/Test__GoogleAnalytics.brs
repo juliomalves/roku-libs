@@ -91,7 +91,7 @@ function TestCase__GoogleAnalytics_SetParams()
         an : "AppName",
         av : "1.2.3",
         ds : "app",
-        sr: "1280x800", 
+        sr: "1280x800",
         ul: "en-gb"
     }
     m.testObject.setParams({sr: "1280x800", ul: "en-gb"})

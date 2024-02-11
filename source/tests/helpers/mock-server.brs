@@ -23,7 +23,7 @@ function MockServer() as Object
         end function
 
         ' Respond with HTTP 200 OK, and return request data
-       handleEvent: function() as Dynamic
+        handleEvent: function() as Dynamic
             if m.streamSocket = invalid then return invalid
             buffer = createObject("roByteArray")
             buffer[1024] = 0
@@ -49,6 +49,3 @@ function MockServer() as Object
 
     return obj
 end function
-
-
-

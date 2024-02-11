@@ -88,7 +88,7 @@ function HttpRequest(params = invalid as Dynamic) as Object
 
             if data <> invalid then m._data = data
 
-             if m._data <> invalid and getInterface(m._data, "ifString") = invalid then
+            if m._data <> invalid and getInterface(m._data, "ifString") = invalid then
                 m._data = formatJson(m._data)
             end if
 
