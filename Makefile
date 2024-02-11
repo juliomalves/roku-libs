@@ -1,6 +1,6 @@
 APPNAME = roku-libs
 DEVICEIP ?= 192.168.1.2
-VERSION ?= 0.17.0
+VERSION ?= 0.18.0
 ROKU ?= rokudev
 ROKUPASS ?= password
 ZIPEXCLUDE = -x \*.pkg -x keys\* -x LICENSE\* -x \*.md -x \*/.\* -x .\* -x build\* -x package\*
