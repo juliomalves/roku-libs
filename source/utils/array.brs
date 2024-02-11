@@ -63,6 +63,31 @@ function ArrayUtil() as Object
             return slicedArr
         end function
 
+        fill: function(arr as Object, value as Dynamic, startIndex=0 as Integer, endIndex=invalid as Dynamic)
+            if not m.isArray(arr) then return invalid
+
+            size = arr.count()
+            lastIndex = size - 1
+            filledArr = []
+
+            if size = 0 then return arr
+
+            if startIndex < 0 then startIndex = 0
+            if startIndex > lastIndex then startIndex = lastIndex
+            if endIndex = invalid then endIndex = lastIndex
+            if endIndex < startIndex then endIndex = startIndex
+
+            for i = 0 to lastIndex
+                if i >= startIndex and i <= endIndex then
+                    filledArr.push(value)
+                else
+                    filledArr.push(arr[i])
+                end if
+            end for
+
+            return filledArr
+        end function
+
         ' Only flattens to depth 1
         flat: function(arr as Object)
             if not m.isArray(arr) then return invalid

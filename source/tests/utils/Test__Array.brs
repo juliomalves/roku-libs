@@ -20,6 +20,7 @@ function TestSuite__Array() as Object
     this.addTest("indexOf should return first index of element equal to given value", TestCase__Array_IndexOf)
     this.addTest("lastIndexOf should return last index of element equal to given value", TestCase__Array_LastIndexOf)
     this.addTest("slice should extract a section of the array", TestCase__Array_Slice)
+    this.addTest("fill should changes all elements within a range of indices to given value", TestCase__Array_Fill)
     this.addTest("flat should create an array with all sub-array elements concatenated into it", TestCase__Array_Flat)
     this.addTest("map should create an array with the results of calling the function on every element of the array", TestCase__Array_Map)
     this.addTest("reduce should reduce array to a single accumulator value", TestCase__Array_Reduce)
@@ -41,7 +42,7 @@ end sub
 
 
 function TestCase__Array_Functions()
-    expectedFunctions = ["isArray", "contains", "indexOf", "lastIndexOf", "slice", "flat", "map", "reduce", "filter", "find", "groupBy"]
+    expectedFunctions = ["isArray", "contains", "indexOf", "lastIndexOf", "slice", "fill", "flat", "map", "reduce", "filter", "find", "groupBy"]
     result = m.assertAAHasKeys(m.testObject, expectedFunctions)
     result += m.assertEqual(m.testObject.keys().count(), expectedFunctions.count())
     return result
@@ -88,6 +89,17 @@ function TestCase__Array_Slice()
     result += m.assertEqual(m.testObject.slice(arr, -4, -2), [2,3,4])
     result += m.assertEqual(m.testObject.slice(arr, 0, 6), [1,2,3,4,5])
     result += m.assertEqual(m.testObject.slice(arr, 3, 2), [])
+    return result
+end function
+
+function TestCase__Array_Fill()
+    arr = [1,2,3,4,5]
+    result = m.assertEqual(m.testObject.fill(arr, 0), [0,0,0,0,0])
+    result += m.assertEqual(m.testObject.fill(arr, 0, 2), [1,2,0,0,0])
+    result += m.assertEqual(m.testObject.fill(arr, 0, 1, 3), [1,0,0,0,5])
+    result += m.assertEqual(m.testObject.fill(arr, 0, -1, 10), [0,0,0,0,0])
+    result += m.assertEqual(m.testObject.fill(invalid, 0), invalid)
+    result += m.assertEqual(m.testObject.fill([], 0), [])
     return result
 end function
 
