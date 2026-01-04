@@ -55,7 +55,7 @@ After having a reference to the GA global (we'll be using `googleAnalytics` in t
 
 ```javascript
 googleAnalytics.init("UA-12345678-90")
-//Or when passing multiple Tracking IDs in an array
+// Or when passing multiple Tracking IDs in an array
 googleAnalytics.init(["UA-12345678-90", ..., "UA-09876543-21"])
 ```
 
@@ -180,21 +180,21 @@ Example usages:
 
 ```javascript
 console = ConsoleUtil();
-console.log("Hello World"); // [14:56:16:891] Hello World
-console.time("Hello World"); // [14:56:16:891] Hello World: timer started
+console.log("Hello World");           // [14:56:16:891] Hello World
+console.time("Hello World");          // [14:56:16:891] Hello World: timer started
 console.group();
-console.log("Hello World"); // [14:56:16:892]     Hello World
-console.count(); // [14:56:16:894]     default: 1
-console.info("Hello World"); // [14:56:16:893]     [INFO] Hello World
+console.log("Hello World");           // [14:56:16:892]     Hello World
+console.count();                      // [14:56:16:894]     default: 1
+console.info("Hello World");          // [14:56:16:893]     [INFO] Hello World
 console.group();
 console.assert(false, "Hello World"); // [14:56:16:894]         [ASSERT] Hello World
-console.count(); // [14:56:16:894]         default: 2
+console.count();                      // [14:56:16:894]         default: 2
 console.groupEnd();
 console.assert(true, "Hello World");
-console.error("Hello World"); // [14:56:16:895]     [ERROR] Hello World
-console.count(); // [14:56:16:894]     default: 3
+console.error("Hello World");         // [14:56:16:895]     [ERROR] Hello World
+console.count();                      // [14:56:16:894]     default: 3
 console.groupEnd();
-console.timeEnd("Hello World"); // [14:56:16:895] Hello World: 4ms
+console.timeEnd("Hello World");       // [14:56:16:895] Hello World: 4ms
 ```
 
 ---
@@ -207,39 +207,38 @@ Example usages:
 
 ```javascript
 arrUtil = ArrayUtil();
-arr = [5, 2, 3, 2, 1];
 
-arrUtil.isArray(arr); // true
-arrUtil.contains(arr, 2); // true
-arrUtil.indexOf(arr, 2); // 1
-arrUtil.lastIndexOf(arr, 2); // 3
-arrUtil.slice(arr, 1, 3); // [2,3,2]
-arrUtil.fill(arr, 0, 1, 3); // [5,0,0,0,1]
+arrUtil.isArray([5, 2, 3, 2, 1]); // true
+arrUtil.contains([5, 2, 3, 2, 1], 2); // true
+arrUtil.indexOf([5, 2, 3, 2, 1], 2); // 1
+arrUtil.lastIndexOf([5, 2, 3, 2, 1], 2); // 3
+arrUtil.slice([5, 2, 3, 2, 1], 1, 3); // [2,3,2]
+arrUtil.fill([5, 2, 3, 2, 1], 0, 1, 3); // [5,0,0,0,1]
 arrUtil.flat([0, 1, 2, [3, 4]]); // [0,1,2,3,4]
 
 // mapFunc = function(element, index, arr)
 //     return element + 1
 // end function
-arrUtil.map(arr, mapFunc); // [6,3,4,3,2]
+arrUtil.map([5, 2, 3, 2, 1], mapFunc); // [6,3,4,3,2]
 
 // reduceFunc = function(acc, element, index, arr)
 //     return acc + element
 // end function
-arrUtil.reduce(arr, reduceFunc); // 13
-arrUtil.reduce(arr, reduceFunc, 5); // 18
+arrUtil.reduce([5, 2, 3, 2, 1], reduceFunc); // 13
+arrUtil.reduce([5, 2, 3, 2, 1], reduceFunc, 5); // 18
 
 // filterFunc = function(element, index, arr)
 //     return element > 2
 // end function
-arrUtil.filter(arr, filterFunc); // [5,3]
+arrUtil.filter([5, 2, 3, 2, 1], filterFunc); // [5,3]
 
 // testFunc = function(element, index, arr)
 //     return element > 2
 // end function
-arrUtil.find(arr, testFunc); // 5
-arrUtil.findIndex(arr, testFunc); // 0
-arrUtil.every(arr, testFunc); // false
-arrUtil.some(arr, testFunc); // true
+arrUtil.find([5, 2, 3, 2, 1], testFunc); // 5
+arrUtil.findIndex([5, 2, 3, 2, 1], testFunc); // 0
+arrUtil.every([5, 2, 3, 2, 1], testFunc); // false
+arrUtil.some([5, 2, 3, 2, 1], testFunc); // true
 
 groupArr = [
     { name: "asparagus", type: "vegetables" },
@@ -259,23 +258,22 @@ Example usages:
 
 ```javascript
 strUtil = StringUtil();
-str = "AbraCadabra";
 
-strUtil.isString(str); // true
-strUtil.charAt(str, 1); // "b"
-strUtil.startsWith(str, "Abra"); // true
-strUtil.endsWith(str, "Cadabra"); // true
-strUtil.contains(str, "bra"); // true
-strUtil.indexOf(str, "ra"); // 2
-strUtil.match(str, "(ab)(ra)", "i"); // ["Abra","Ab","ra"]
-strUtil.replace(str, "Cad", "-"); // "Abra-abra"
-strUtil.truncate(str, 4, "..."); // "Abra..."
-strUtil.repeat(str, 2); // "AbraCadabraAbraCadabra"
-strUtil.padStart(str, 15); // "    AbraCadabra"
-strUtil.padEnd(str, 15); // "AbraCadabra    "
-strUtil.concat(str, " Cadabra"); // "AbraCadabra Cadabra"
+strUtil.isString("AbraCadabra"); // true
+strUtil.charAt("AbraCadabra", 1); // "b"
+strUtil.startsWith("AbraCadabra", "Abra"); // true
+strUtil.endsWith("AbraCadabra", "Cadabra"); // true
+strUtil.contains("AbraCadabra", "bra"); // true
+strUtil.indexOf("AbraCadabra", "ra"); // 2
+strUtil.match("AbraCadabra", "(ab)(ra)", "i"); // ["Abra","Ab","ra"]
+strUtil.replace("AbraCadabra", "Cad", "-"); // "Abra-abra"
+strUtil.truncate("AbraCadabra", 4, "..."); // "Abra..."
+strUtil.repeat("AbraCadabra", 2); // "AbraCadabraAbraCadabra"
+strUtil.padStart("AbraCadabra", 15); // "    AbraCadabra"
+strUtil.padEnd("AbraCadabra", 15); // "AbraCadabra    "
+strUtil.concat("AbraCadabra", " Cadabra"); // "AbraCadabra Cadabra"
 strUtil.toString(["1", 2, true]); // "[1,2,true]"
-strUtil.toMD5(str); // "3aa51d002ab23a353b13df9ba059b4fc"
+strUtil.toMD5("AbraCadabra"); // "3aa51d002ab23a353b13df9ba059b4fc"
 ```
 
 ---
